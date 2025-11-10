@@ -1,0 +1,155 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# === Android / IntelliJ / Gradle Git Ignore ===
+
+### Android ###
+# Gradle files
+.gradle/
+build/
+!gradle-wrapper.jar
+/local.properties
+
+# Signing files
+*.jks
+*.keystore
+*.key
+*.pem
+
+# Android Studio captures and outputs
+captures/
+outputs/
+release/
+generated/
+intermediates/
+
+# Android NDK
+.externalNativeBuild/
+.cxx/
+
+### IntelliJ IDEA ###
+# Project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# User-specific configurations
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/httpRequests
+.idea/caches
+.idea/assetWizardSettings.xml
+.idea/navEditor.xml
+.idea/compiler.xml
+.idea/deploymentTargetDropDown.xml
+
+# JetBrains crash reports
+.idea/shelf/
+.idea/sonarlint/
+.idea/modules.xml
+.idea/gradle.xml
+
+### Gradle ###
+.gradle/
+build/
+!gradle-wrapper.jar
+gradle-app.setting
+
+# Log files
+*.log
+
+### Local OS ###
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.nfs*
+
+### Environment ###
+.env
+.env.*
+
+### Misc ###
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.lock
+*.orig
+
+# Android Studio profiler
+*.hprof
+
+# APK / AAB files
+*.apk
+*.ap_
+*.aab
+
+# Build outputs
+app/release/
+app/debug/
+
+# Jetpack Compose previews
+*.preview
+
+# Crashlytics / Firebase
+crashlytics-build.properties
+fabric.properties
+
+# Keystore and signing configs
+key.properties
+*.keystore
+
+# Gradle cache
+.gradle/
+.gradle/*
+
+# Coverage
+coverage/
+*.ec
+
+# IntelliJ run configurations
+.idea/runConfigurations/
+
+# Lint / analysis
+lint/
+lint-results.xml
+lint-results.html
+
+# Kotlin specific
+*.kotlin_module
+kotlin/compileDebugKotlin/
+kotlin/compileReleaseKotlin/
+
+# Generated files
+**/build/
+**/generated/
+
+# Other
+.idea/vcs.xml
+local.properties
