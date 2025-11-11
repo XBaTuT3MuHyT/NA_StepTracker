@@ -41,10 +41,11 @@ fun MyApp() {
 
 sealed class BottomBarScreen(
     val route: String,
+    val label: String,
     val icon: ImageVector
 ){
-    object Home: BottomBarScreen("homeScreen", Icons.Default.Home)
-    object Stat: BottomBarScreen("statScreen", Icons.Default.DateRange)
-    object Settings: BottomBarScreen("settingsScreen", Icons.Default.Settings)
+    object Home: BottomBarScreen("homeScreen","Сегодня", Icons.Default.Home)
+    object Stat: BottomBarScreen("statScreen","Отчет", Icons.Default.DateRange)
+    object Settings: BottomBarScreen("settingsScreen","Еще", Icons.Default.Settings)
 }
 
