@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -38,48 +39,45 @@ fun LoginScreen(navController: NavHostController) {
         TextButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                navController.navigate(Graph.HOME)
+                navController.navigate(Graph.HOME) {
+                    launchSingleTop = true
+                    popUpTo(0) { inclusive = true }
+                }
             }) {
             Text("LogIn")
         }
-        ForgotPasswordClickableText()
-        SignupClickableText()
+        ForgotPasswordClickableText(navController)
+        SignupClickableText(navController)
     }
 }
 
 @Composable
-fun LoginClickableText(){
+fun ClickableText(
+    text: String,
+    onClick: () -> Unit,
+    color: Color = Color(0xFF1E88E5),
+    textDecoration: TextDecoration = TextDecoration.Underline,
+    fontSize: TextUnit = 16.sp,
+    ){
     Text(
-        text = "Есть аккаунт",
-        fontSize = 16.sp,
-        color = Color(0xFF1E88E5),
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier.clickable {
-
-        }
+        text = text,
+        fontSize = fontSize,
+        color = color,
+        textDecoration = textDecoration,
+        modifier = Modifier.clickable {onClick}
     )
 }
 @Composable
-fun ForgotPasswordClickableText(){
-    Text(
-        text = "Забыли пароль?",
-        fontSize = 16.sp,
-        color = Color(0xFF1E88E5),
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier.clickable {
-        }
-    )
+fun LoginClickableText(navController: NavHostController){
+    ClickableText("Есть аккаунт", {navController.navigate("login")})
 }
 @Composable
-fun SignupClickableText(){
-    Text(
-        text = "Регистрация",
-        fontSize = 16.sp,
-        color = Color(0xFF1E88E5),
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier.clickable {
-        }
-    )
+fun ForgotPasswordClickableText(navController: NavHostController){
+    ClickableText("Забыли пароль?", {navController.navigate("forgot")})
+}
+@Composable
+fun SignupClickableText(navController: NavHostController){
+    ClickableText("Регистрация", {navController.navigate("signup")})
 }
 
 //@Preview(showBackground = true)

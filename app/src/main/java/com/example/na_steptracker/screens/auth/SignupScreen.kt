@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.na_steptracker.graphs.Graph
 
 @Composable
 fun SignupScreen(navController: NavHostController) {
@@ -32,10 +33,15 @@ fun SignupScreen(navController: NavHostController) {
         )
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {}) {
+            onClick = {
+                navController.navigate(Graph.HOME) {
+                    launchSingleTop = true
+                    popUpTo(0) { inclusive = true }
+                }
+            }) {
             Text("SignUp")
         }
-        LoginClickableText()
+        LoginClickableText(navController)
     }
 }
 //@Preview(showBackground = true)

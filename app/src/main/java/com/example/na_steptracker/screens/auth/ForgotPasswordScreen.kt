@@ -29,8 +29,8 @@ fun ForgotPasswordScreen(navController: NavHostController) {
                 .height(28.dp)
                 .fillMaxWidth()
         )
-        LoginClickableText()
-        SignupClickableText()
+        LoginClickableText(navController)
+        SignupClickableText(navController)
     }
 }
 
