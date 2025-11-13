@@ -29,7 +29,7 @@ fun ForgotPasswordScreen(navController: NavController) {
             textAlign = TextAlign.Center,
             text = "Forgot password \nscreen"
         )
-        AuthSpacer()
+        AuthSpacer(325.dp)
         LoginClickableText(navController)
         SignupClickableText(navController)
     }
