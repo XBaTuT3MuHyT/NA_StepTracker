@@ -58,36 +58,40 @@ fun ClickableText(
     fontSize: TextUnit = 16.sp,
     navController: NavController,
     route: String
-    ){
+) {
     Text(
         text = text,
         fontSize = fontSize,
         color = color,
         textDecoration = textDecoration,
         modifier = Modifier.clickable {
-            navController.navigate(route){
+            navController.navigate(route) {
                 launchSingleTop = true
                 popUpTo("login")
             }
         }
     )
 }
+
 @Composable
-fun LoginClickableText(navController: NavController){
+fun LoginClickableText(navController: NavController) {
     ClickableText("Есть аккаунт", route = "login", navController = navController)
 }
+
 @Composable
-fun ForgotPasswordClickableText(navController: NavController){
+fun ForgotPasswordClickableText(navController: NavController) {
     ClickableText("Забыли пароль?", route = "forgot", navController = navController)
 }
+
 @Composable
-fun SignupClickableText(navController: NavController){
+fun SignupClickableText(navController: NavController) {
     ClickableText("Регистрация", route = "signup", navController = navController)
 }
+
 @Composable
 fun AuthSpacer(
     height: Dp = 300.dp
-){
+) {
     Spacer(
         modifier = Modifier
             .height(height)

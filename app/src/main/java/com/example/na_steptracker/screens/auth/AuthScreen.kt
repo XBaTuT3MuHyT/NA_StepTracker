@@ -20,7 +20,6 @@ import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
 @Composable
 fun AuthScreen(
-//    navController: NavHostController
 ) {
     Column(
         modifier = Modifier

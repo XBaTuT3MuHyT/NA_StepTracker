@@ -1,7 +1,9 @@
 package com.example.na_steptracker
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Label
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,14 +29,19 @@ fun MyApp() {
     NA_StepTrackerTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+            topBar = {
+                if (currentRoute in bottomBarScreens) {
+                    TopBar(navController)
+                }
+            },
             bottomBar = {
-                if (currentRoute in bottomBarScreens){
+                if (currentRoute in bottomBarScreens) {
                     BottomBar(navController)
                 }
             }
-        ){innerPadding ->
+        ) { innerPadding ->
             RootNavGraph(navController, innerPadding)
-    }
+        }
 
 
     }

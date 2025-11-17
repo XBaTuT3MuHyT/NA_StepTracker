@@ -23,16 +23,14 @@ import androidx.navigation.NavController
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    Text("Settings Screen")
     SettingsList(List<Setting>(20){Setting("Setting ")})
 }
 @Composable
 fun SettingsList(items: List<Setting>){
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(0.dp, 36.dp),
-        contentPadding = PaddingValues(0.dp, 16.dp),
+            .fillMaxSize(),
+        contentPadding = PaddingValues(0.dp, 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(items) { item ->
@@ -54,13 +52,13 @@ fun SettingsList(items: List<Setting>){
         }
     }
 }
+
 data class Setting(val label: String)
 
 @Preview(
     showBackground = true,
-
-    )
+)
 @Composable
-fun SettingsListPreview(){
-    SettingsList(List<Setting>(15){Setting("Setting ")})
+fun SettingsListPreview() {
+    SettingsList(List<Setting>(15) { Setting("Setting ") })
 }
