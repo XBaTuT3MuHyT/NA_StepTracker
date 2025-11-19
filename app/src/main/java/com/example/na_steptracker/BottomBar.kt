@@ -6,30 +6,33 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.na_steptracker.graphs.BottomBarScreen
 
 @Composable
-fun BottomBar(navController: NavController){
+fun BottomBar(navController: NavController) {
     val screens = listOf(
         BottomBarScreen.Home,
         BottomBarScreen.Stat,
         BottomBarScreen.Settings
     )
-    NavigationBar{
+    NavigationBar {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
 
-        screens.forEach {screen ->
+        screens.forEach { screen ->
             NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = null)},
-                label = {Text(screen.label)},
+                icon = { Icon(screen.icon, contentDescription = null) },
+                label = { Text(stringResource(screen.label)) },
                 selected = currentRoute == screen.route,
-                onClick = {navController.navigate(screen.route){
-                    launchSingleTop = true
-                    popUpTo(BottomBarScreen.Home.route)
-                } }
+                onClick = {
+                    navController.navigate(screen.route) {
+                        launchSingleTop = true
+                        popUpTo(BottomBarScreen.Home.route)
+                    }
+                }
             )
         }
     }

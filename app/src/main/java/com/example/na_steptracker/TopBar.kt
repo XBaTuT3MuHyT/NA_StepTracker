@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,9 +19,9 @@ fun TopBar(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val title = when (currentRoute) {
-        BottomBarScreen.Home.route -> BottomBarScreen.Home.label
-        BottomBarScreen.Stat.route -> BottomBarScreen.Stat.label
-        BottomBarScreen.Settings.route -> BottomBarScreen.Settings.label
+        BottomBarScreen.Home.route -> stringResource(BottomBarScreen.Home.label)
+        BottomBarScreen.Stat.route -> stringResource(BottomBarScreen.Stat.label)
+        BottomBarScreen.Settings.route -> stringResource(BottomBarScreen.Settings.label)
         else -> {
             ""
         }
@@ -28,7 +29,7 @@ fun TopBar(navController: NavController) {
     TopAppBar(
         title = {
             Text(
-                title,
+                text = title,
                 fontWeight = FontWeight.Bold
             )
         })

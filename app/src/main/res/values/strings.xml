@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">NA_StepTracker</string>
+    <string name="avg_steps">В среднем в день:</string>
+    <!-- Настройки -->
+    <string name="settings_steps_goal">Цель по количеству шагов</string>
+    <string name="settings_profile_title">Профиль</string>
+    <string name="settings_profile_steps">Шагов</string>
+    <string name="settings_profile_ccal">Ккал</string>
+    <string name="settings_profile_dialog_title">Настройки проофиля</string>
+    <string name="settings_profile_dialog_surname">Фамилия</string>
+    <string name="settings_profile_dialog_name">Имя</string>
+    <string name="settings_profile_dialog_button_exit_profile">Выйти из профиля</string>
+    <string name="settings_profile_dialog_button_close">Закрыть</string>
+
+    <!-- Навигация -->
+    <string name="bottom_bar_today">Сегодня</string>
+    <string name="bottom_bar_statistics">Отчет</string>
+    <string name="bottom_bar_more">Еще</string>
 </resources>

@@ -9,27 +9,32 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.na_steptracker.R
 import com.example.na_steptracker.screens.home.HomeScreen
 import com.example.na_steptracker.screens.home.SettingsScreen
 import com.example.na_steptracker.screens.home.StatScreen
+import androidx.annotation.StringRes
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.HOME,
         startDestination = "homeScreen",
-    ){
-        composable(BottomBarScreen.Home.route){ HomeScreen(navController) }
-        composable(BottomBarScreen.Stat.route){ StatScreen(navController) }
+    ) {
+        composable(BottomBarScreen.Home.route) { HomeScreen(navController) }
+        composable(BottomBarScreen.Stat.route) { StatScreen(navController) }
         composable(BottomBarScreen.Settings.route) { SettingsScreen(navController) }
     }
 }
 
 sealed class BottomBarScreen(
     val route: String,
-    val label: String,
+    @StringRes val label: Int,
     val icon: ImageVector
-){
-    object Home: BottomBarScreen("homeScreen","Сегодня", Icons.Default.Home)
-    object Stat: BottomBarScreen("statScreen","Отчет", Icons.Default.DateRange)
-    object Settings: BottomBarScreen("settingsScreen","Еще", Icons.Default.Settings)
+) {
+    object Home : BottomBarScreen("homeScreen", R.string.bottom_bar_today, Icons.Default.Home)
+    object Stat :
+        BottomBarScreen("statScreen", R.string.bottom_bar_statistics, Icons.Default.DateRange)
+
+    object Settings :
+        BottomBarScreen("settingsScreen", R.string.bottom_bar_more, Icons.Default.Settings)
 }

@@ -19,17 +19,21 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.na_steptracker.R
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -112,11 +116,18 @@ fun WeaklyStat(days: List<Day>) {
         shape = RoundedCornerShape(16.dp),
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(
-                text = "В среднем в день: 5632",
-                fontWeight = FontWeight.SemiBold,
+            Row(
                 modifier = Modifier.padding(16.dp, 0.dp)
-            )
+            ){
+                Text(
+                    text = stringResource(R.string.avg_steps),
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = (" 5632"),
+                    fontWeight = FontWeight.Bold,
+                )
+            }
             Row(
                 Modifier
                     .fillMaxWidth()
