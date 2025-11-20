@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,37 +62,50 @@ fun DailyStat() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(186.dp),
+            .height(200.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.Center
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.SpaceAround,
         ) {
-            Column(
-                Modifier.fillMaxHeight(),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "5642",
-                    fontSize = 52.sp,
-                    modifier = Modifier.padding(32.dp, 8.dp)
-                )
-                Text(
-                    text = "/6000",
-                    fontSize = 26.sp,
-                    modifier = Modifier.padding(32.dp, 0.dp)
+                Spacer(modifier = Modifier.weight(0.1f))
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "5642",
+                        fontSize = 52.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        modifier = Modifier.alpha(0.5f),
+                        text = "/6000 Шаги",
+                        fontSize = 20.sp,
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Default.WbSunny,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .weight(1f)
                 )
             }
-            Icon(
-                imageVector = Icons.Default.WbSunny,
-                contentDescription = null,
+            LinearProgressIndicator(
+                progress = { Random.nextFloat() },
                 modifier = Modifier
-                    .padding(36.dp)
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(15.dp)
             )
         }
     }
@@ -117,10 +132,11 @@ fun WeaklyStat(days: List<Day>) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.padding(16.dp, 0.dp)
-            ){
+                modifier = Modifier.padding(start = 16.dp, bottom = 6.dp)
+            ) {
                 Text(
                     text = stringResource(R.string.avg_steps),
+                    modifier = Modifier.alpha(0.5f),
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
@@ -140,12 +156,10 @@ fun WeaklyStat(days: List<Day>) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.padding(0.dp, 8.dp),
+                            modifier = Modifier
+                                .padding(0.dp, 8.dp)
+                                .size(30.dp),
                             progress = { Random.nextFloat() },
-                            color = ProgressIndicatorDefaults.circularColor,
-                            strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
-                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                            strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
                         )
                         Text(
                             text = day.dayOfTheWeek.getDisplayName(
