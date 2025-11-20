@@ -38,12 +38,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.na_steptracker.R
 import com.example.na_steptracker.graphs.Graph
+import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -286,6 +289,7 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
+                        onDismiss()
                         navController.navigate(Graph.AUTH) {
                             popUpTo(0)
                         }
@@ -316,13 +320,14 @@ data class Setting(val label: String)
 //    }
 //}
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DialogPreview(navController: NavController) {
-//    NA_StepTrackerTheme {
-//        ProfileDialog { navController }
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun DialogPreview() {
+    NA_StepTrackerTheme {
+        val navController = rememberNavController()
+        ProfileDialog(navController){}
+    }
+}
 
 //@Preview(showBackground = true)
 //@Composable
