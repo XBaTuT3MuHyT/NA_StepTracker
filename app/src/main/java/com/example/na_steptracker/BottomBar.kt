@@ -30,7 +30,10 @@ fun BottomBar(navController: NavController) {
                 onClick = {
                     navController.navigate(screen.route) {
                         launchSingleTop = true
-                        popUpTo(BottomBarScreen.Home.route)
+                        restoreState = true
+                        popUpTo(BottomBarScreen.Home.route) {
+                            saveState = true
+                        }
                     }
                 }
             )

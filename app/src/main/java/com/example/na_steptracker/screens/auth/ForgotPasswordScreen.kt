@@ -34,11 +34,3 @@ fun ForgotPasswordScreen(navController: NavController) {
         SignupClickableText(navController)
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ForgotPasswordPreview(){
-//    NA_StepTrackerTheme {
-//        ForgotPasswordScreen()
-//    }
-//}

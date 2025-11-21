@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -113,7 +114,7 @@ fun ProfileSetting(navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
-            .height(150.dp),
+            .height(160.dp),
         onClick = {
             showDialog = true
         },
@@ -124,43 +125,41 @@ fun ProfileSetting(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
-                modifier = Modifier.weight(2F)
+                modifier = Modifier.weight(1.5F)
             ) {
                 Text(
                     text = stringResource(R.string.settings_profile_title),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier
-                        .padding(16.dp, 0.dp)
+                        .padding(start = 26.dp, bottom = 16.dp)
                         .fillMaxWidth()
                 )
 
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.Absolute.SpaceAround
                 ) {
                     Column {
                         Text(
                             text = "5632",
-                            modifier = Modifier.padding(4.dp),
-                            fontSize = 24.sp
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
+                            modifier = Modifier.alpha(0.5f),
                             text = stringResource(R.string.settings_profile_steps),
-                            modifier = Modifier.padding(4.dp)
                         )
                     }
                     Column {
                         Text(
                             text = "56",
-                            modifier = Modifier.padding(4.dp),
-                            fontSize = 24.sp
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
+                            modifier = Modifier.alpha(0.5f),
                             text = stringResource(R.string.settings_profile_ccal),
-                            modifier = Modifier.padding(4.dp)
                         )
                     }
                 }
@@ -179,17 +178,12 @@ fun ProfileSetting(navController: NavController) {
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = null
                 )
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Имя Фамилия",
-                        modifier = Modifier.padding(2.dp, 0.dp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                Text(
+                    text = "Имя Фамилия",
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -216,7 +210,10 @@ fun SettingsDropDown() {
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            Text(selectedItem)
+            Text(
+                text = selectedItem,
+                color = MaterialTheme.colorScheme.primary
+            )
             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
         }
 
@@ -312,20 +309,21 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
 
 data class Setting(val label: String)
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DropDownPreview() {
-//    NA_StepTrackerTheme {
-//        SettingsDropDown()
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun DropDownPreview() {
+    val navController = rememberNavController()
+    NA_StepTrackerTheme {
+        ProfileSetting(navController)
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun DialogPreview() {
     NA_StepTrackerTheme {
         val navController = rememberNavController()
-        ProfileDialog(navController){}
+        ProfileDialog(navController) {}
     }
 }
 

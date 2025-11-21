@@ -6,7 +6,7 @@
     <string name="settings_profile_title">Профиль</string>
     <string name="settings_profile_steps">Шагов</string>
     <string name="settings_profile_ccal">Ккал</string>
-    <string name="settings_profile_dialog_title">Настройки проофиля</string>
+    <string name="settings_profile_dialog_title">Настройки профиля</string>
     <string name="settings_profile_dialog_surname">Фамилия</string>
     <string name="settings_profile_dialog_name">Имя</string>
     <string name="settings_profile_dialog_button_exit_profile">Выйти из профиля</string>

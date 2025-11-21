@@ -54,7 +54,6 @@ fun HomeScreen(navController: NavController) {
         DailyStat()
         WeaklyStat(days)
     }
-
 }
 
 @Composable
