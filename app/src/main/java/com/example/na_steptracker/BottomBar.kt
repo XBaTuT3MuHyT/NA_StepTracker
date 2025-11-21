@@ -28,11 +28,13 @@ fun BottomBar(navController: NavController) {
                 label = { Text(stringResource(screen.label)) },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(BottomBarScreen.Home.route) {
-                            saveState = true
+                    if (screen.route != currentRoute){
+                        navController.navigate(screen.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(BottomBarScreen.Home.route) {
+                                saveState = true
+                            }
                         }
                     }
                 }

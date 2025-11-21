@@ -45,7 +45,7 @@ import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 @Composable
 fun SignupScreen(navController: NavController) {
     var name by remember { mutableStateOf("") }
-    var surName by remember { mutableStateOf("") }
+//    var surName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
@@ -85,17 +85,17 @@ fun SignupScreen(navController: NavController) {
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
             )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-
-                value = surName,
-                onValueChange = { newSurName ->
-                    surName = newSurName
-                },
-                label = { Text(stringResource(R.string.signup_textfield_surname)) },
-                shape = RoundedCornerShape(16.dp),
-                singleLine = true,
-            )
+//            OutlinedTextField(
+//                modifier = Modifier.fillMaxWidth(),
+//
+//                value = surName,
+//                onValueChange = { newSurName ->
+//                    surName = newSurName
+//                },
+//                label = { Text(stringResource(R.string.signup_textfield_surname)) },
+//                shape = RoundedCornerShape(16.dp),
+//                singleLine = true,
+//            )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
 
