@@ -1,7 +1,9 @@
 package com.example.na_steptracker.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +14,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.RocketLaunch
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +73,9 @@ fun DailyStat() {
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.SpaceAround,
         ) {
             Row(
@@ -100,7 +110,7 @@ fun DailyStat() {
                 )
             }
             LinearProgressIndicator(
-                progress = { Random.nextFloat() },
+                progress = { days[6].steps.toFloat() / 6000 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -116,7 +126,7 @@ val today = LocalDate.now()
 val days = List(7) { index ->
     val date = today.minusDays(index.toLong())
     Day(
-        steps = Random.nextInt(0..6000),
+        steps = Random.nextInt(0..8000),
         date.dayOfWeek
     )
 }.reversed()
@@ -151,20 +161,26 @@ fun WeaklyStat(days: List<Day>) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (day in days) {
+
+                    val progress = day.steps.toFloat() / 6000
+                    val alphaMod: Float = if (progress >= 1) 1f else 0.5f
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(0.dp, 8.dp)
-                                .size(30.dp),
-                            progress = { Random.nextFloat() },
-                        )
+                        ProgressWithCenterDot(progress)
+//                        CircularProgressIndicator(
+//                            modifier = Modifier
+//                                .padding(0.dp, 8.dp)
+//                                .size(30.dp),
+//                            progress = { progress },
+//                        )
                         Text(
                             text = day.dayOfTheWeek.getDisplayName(
                                 TextStyle.SHORT,
                                 Locale.getDefault()
-                            )
+                            ),
+                            modifier = Modifier.alpha(alphaMod)
                         )
                     }
                 }
@@ -172,6 +188,34 @@ fun WeaklyStat(days: List<Day>) {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgressWithCenterDot(progress: Float) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(vertical = 8.dp)
+    ) {
+
+        CircularProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.size(30.dp),
+        )
+
+        if (progress >= 1f) {
+            Icon(
+                modifier = Modifier
+                    .size(20.dp),
+                imageVector = Icons.Default.Bolt,
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = null
+            )
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

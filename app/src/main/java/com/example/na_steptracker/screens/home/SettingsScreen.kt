@@ -59,7 +59,6 @@ fun SettingsList(items: List<Setting>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
-        contentPadding = PaddingValues(0.dp, 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
