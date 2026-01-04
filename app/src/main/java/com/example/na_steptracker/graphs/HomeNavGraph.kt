@@ -28,7 +28,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
 
 sealed class BottomBarScreen(
     val route: String,
-    @StringRes val label: Int,
+    @param:StringRes val label: Int,
     val icon: ImageVector
 ) {
     object Home : BottomBarScreen("homeScreen", R.string.bottom_bar_today, Icons.Default.Home)

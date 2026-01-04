@@ -36,8 +36,10 @@
     <string name="signup_textfield_repeat_password">Повторите пароль</string>
     <string name="signup_button_signup">Далее</string>
     <string name="signup_text_account_exist">"Уже есть аккаунт? "</string>
-    <string name="stat_weekly_chart_title">Неделя</string>
 
     <!-- Статистика -->
+    <string name="stat_weekly_chart_title">Неделя</string>
+    <string name="stat_daily_chart_title">День</string>
+    <string name="stat_grid_title">Мои рекорды</string>
 
 </resources>

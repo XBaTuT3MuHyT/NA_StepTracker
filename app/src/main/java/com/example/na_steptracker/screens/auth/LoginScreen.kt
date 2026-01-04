@@ -168,7 +168,7 @@ fun ClickableText(
     Text(
         text = text,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.clickable {
+            modifier = Modifier.clickable {
             navController.navigate(route) {
                 launchSingleTop = true
                 popUpTo("login")

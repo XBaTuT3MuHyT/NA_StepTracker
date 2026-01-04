@@ -51,7 +51,7 @@ import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    SettingsList(List<Setting>(20) { Setting("Setting ") }, navController)
+    SettingsList(List<Setting>(10) { Setting("Setting ") }, navController)
 }
 
 @Composable
