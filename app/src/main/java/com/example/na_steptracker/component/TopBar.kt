@@ -1,4 +1,4 @@
-package com.example.na_steptracker
+package com.example.na_steptracker.component
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -10,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.na_steptracker.graphs.BottomBarScreen
-import com.example.na_steptracker.graphs.Graph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
