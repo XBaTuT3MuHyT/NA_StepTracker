@@ -4,21 +4,27 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -35,9 +41,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,13 +55,85 @@ import com.example.na_steptracker.R
 import com.example.na_steptracker.graphs.Graph
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
-@Composable
-fun SettingsScreen(navController: NavController) {
-    SettingsList(List<Setting>(10) { Setting("Setting ") }, navController)
+data class SettingModel(
+    val titleRes: Int,
+    val icon: ImageVector? = null,
+    val dropDown: (@Composable () -> Unit)? = null,
+)
+
+object SettingsProvider {
+
+    val settings = listOf(
+        SettingModel(
+            titleRes = R.string.settings_steps_goal,
+            icon = Icons.Default.MyLocation,
+            dropDown = {
+                SettingsDropDown(
+                    items = (2000..15000 step 500).map { it.toString() },
+                    selectedIndex = 0,
+                )
+            }
+        ),
+        SettingModel(
+            titleRes = R.string.settings_select_language,
+            icon = Icons.Default.Language,
+            dropDown = {
+                SettingsDropDown(
+                    items = listOf("Русский", "English"),
+                    selectedIndex = 0,
+                )
+            }
+        ),
+        SettingModel(
+            titleRes = R.string.settings_permision,
+            icon = Icons.Default.LockOpen,
+        ),
+    )
 }
 
 @Composable
-fun SettingsList(items: List<Setting>, navController: NavController) {
+fun SettingsScreen(navController: NavController) {
+    SettingsList(SettingsProvider.settings, navController)
+}
+
+@Composable
+fun Setting(
+    settingModel: SettingModel
+) {
+    Card(
+        modifier = Modifier
+            .height(72.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            settingModel.icon?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            Text(
+                text = stringResource(settingModel.titleRes),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            settingModel.dropDown?.let {
+                it()
+            }
+
+        }
+    }
+}
+
+
+@Composable
+fun SettingsList(items: List<SettingModel>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -64,46 +142,31 @@ fun SettingsList(items: List<Setting>, navController: NavController) {
         item {
             ProfileSetting(navController)
         }
-        item {
-            Card(
-                modifier = Modifier
-                    .height(72.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_steps_goal),
-                    )
-                    SettingsDropDown()
-                }
-            }
-        }
+//        item {
+//            Card(
+//                modifier = Modifier
+//                    .height(72.dp)
+//                    .fillMaxWidth(),
+//                shape = RoundedCornerShape(16.dp),
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(16.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Text(
+//                        text = stringResource(R.string.settings_steps_goal),
+//                    )
+//                    SettingsDropDown()
+//                }
+//            }
+//        }
         items(items) { item ->
-            Card(
-                modifier = Modifier
-                    .height(52.dp)
-                    .fillMaxWidth(),
-                onClick = {},
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = item.label,
-                        modifier = Modifier
-                            .padding(8.dp)
-                    )
-                }
-            }
+            Setting(
+                settingModel = item,
+            )
         }
     }
 }
@@ -191,11 +254,13 @@ fun ProfileSetting(navController: NavController) {
     }
 }
 
-
 @Composable
-fun SettingsDropDown() {
+fun SettingsDropDown(
+    items: List<String>,
+    selectedIndex: Int,
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf("6000") }
+    var selectedItem by remember { mutableStateOf(items[selectedIndex]) }
 
     Box(
         modifier = Modifier.wrapContentSize()
@@ -217,14 +282,15 @@ fun SettingsDropDown() {
         }
 
         DropdownMenu(
+            modifier = Modifier.heightIn(max = 300.dp),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            listOf("5000", "6000", "7000", "8000").forEach { goal ->
+            items.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(goal) },
+                    text = { Text(item) },
                     onClick = {
-                        selectedItem = goal
+                        selectedItem = item
                         expanded = false
                     }
                 )
@@ -305,8 +371,6 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
         }
     }
 }
-
-data class Setting(val label: String)
 
 @Preview(showBackground = true)
 @Composable
