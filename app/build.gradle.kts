@@ -1,14 +1,13 @@
-    plugins {
+plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.na_steptracker"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.na_steptracker"
@@ -33,12 +32,19 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
     }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+    }
+
 }
 
 dependencies {
@@ -62,4 +68,6 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.glance.appwidget)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 }

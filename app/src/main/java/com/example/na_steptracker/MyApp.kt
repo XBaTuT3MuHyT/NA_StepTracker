@@ -9,6 +9,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.na_steptracker.component.BottomBar
 import com.example.na_steptracker.component.TopBar
+import com.example.na_steptracker.data.db.DataBase
 import com.example.na_steptracker.graphs.BottomBarScreen
 import com.example.na_steptracker.graphs.RootNavGraph
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
