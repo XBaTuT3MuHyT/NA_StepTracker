@@ -1,4 +1,4 @@
-package com.example.na_steptracker.component
+package com.example.na_steptracker.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

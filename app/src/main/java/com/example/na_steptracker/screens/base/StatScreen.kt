@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.na_steptracker.R
-import com.example.na_steptracker.component.RecordCard
-import com.example.na_steptracker.component.RecordCardModel
+import com.example.na_steptracker.components.RecordCard
+import com.example.na_steptracker.components.RecordCardModel
 import com.example.na_steptracker.screens.base.home.days
 import java.time.format.TextStyle
 import java.util.Locale

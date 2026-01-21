@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
-import com.example.na_steptracker.domain.model.DaySteps
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
