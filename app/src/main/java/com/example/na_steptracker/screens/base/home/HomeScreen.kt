@@ -26,16 +26,22 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.na_steptracker.App
 import com.example.na_steptracker.R
+import com.example.na_steptracker.domain.model.DaySteps
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -47,17 +53,40 @@ import kotlin.random.nextInt
 
 @Composable
 fun HomeScreen(navController: NavController) {
+    val app = LocalContext.current.applicationContext as App
+
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(app.stepsRepository)
+    )
+
+    val dailyModel by viewModel.dailyModel.collectAsState()
+    Content(dailyModel)
+}
+
+data class Day(val steps: Int, val dayOfTheWeek: DayOfWeek)
+
+val today = LocalDate.now()
+val days = List(7) { index ->
+    val date = today.minusDays(index.toLong())
+    Day(
+        steps = Random.nextInt(0..8000),
+        date.dayOfWeek
+    )
+}.reversed()
+
+@Composable
+fun Content(dailyModel: DailyUiModel) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        DailyStat()
+        DailyStat(dailyModel)
         WeaklyStat(days)
     }
 }
 
 @Composable
-fun DailyStat() {
+fun DailyStat(dailyModel: DailyUiModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,13 +112,13 @@ fun DailyStat() {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "5642",
+                        text = "${dailyModel.current}",
                         fontSize = 52.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         modifier = Modifier.alpha(0.5f),
-                        text = "/6000 Шаги",
+                        text = "/${dailyModel.target} ${stringResource(R.string.home_steps)}",
                         fontSize = 20.sp,
                     )
                 }
@@ -102,7 +131,7 @@ fun DailyStat() {
                 )
             }
             LinearProgressIndicator(
-                progress = { days[6].steps.toFloat() / 6000 },
+                progress = { dailyModel.progress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -111,17 +140,6 @@ fun DailyStat() {
         }
     }
 }
-
-data class Day(val steps: Int, val dayOfTheWeek: DayOfWeek)
-
-val today = LocalDate.now()
-val days = List(7) { index ->
-    val date = today.minusDays(index.toLong())
-    Day(
-        steps = Random.nextInt(0..8000),
-        date.dayOfWeek
-    )
-}.reversed()
 
 @Composable
 fun WeaklyStat(days: List<Day>) {
@@ -213,7 +231,9 @@ fun ProgressWithCenterDot(progress: Float) {
 @Composable
 fun HomeScreenPreview() {
     NA_StepTrackerTheme {
-        DailyStat()
+        DailyStat(
+            DailyUiModel(7000, 10000, 0.7f)
+        )
     }
 }
 

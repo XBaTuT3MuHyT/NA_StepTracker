@@ -1,37 +1,40 @@
 package com.example.na_steptracker.screens.base.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.na_steptracker.data.steps.StepsRepository
-import com.example.na_steptracker.domain.model.DaySteps
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 
 class HomeViewModel(
     stepsRepository: StepsRepository
 ) : ViewModel() {
+
     private val today = LocalDate.now()
 
-    val todaySteps: StateFlow<DaySteps> =
-        stepsRepository.observeStepsForDate(today)
-            .stateIn(
+    private val dailyGoalFlow = flowOf(10_000)
+
+    val dailyModel: StateFlow<DailyUiModel> =
+        combine(
+            stepsRepository.observeStepsForDate(today),
+            dailyGoalFlow,
+        ){ steps, goal ->
+            DailyUiModel(
+                current = steps.steps,
+                target = goal,
+                progress = steps.steps / goal.toFloat()
+            )
+        }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = DaySteps(today, 0)
+                initialValue = DailyUiModel(
+                    0,
+                    0,
+                    0f
+                )
             )
-
-    companion object {
-        val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
-            ): T {
-                return super.create(modelClass)
-            }
-        }
-    }
 }

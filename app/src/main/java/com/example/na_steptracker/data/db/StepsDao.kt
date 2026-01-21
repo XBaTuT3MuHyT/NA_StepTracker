@@ -10,16 +10,16 @@ import java.time.LocalDate
 @Dao
 interface StepsDao {
 
-    @Query("SELECT steps FROM days WHERE date = :date")
+    @Query("SELECT * FROM days WHERE date = :date")
     fun observeStepsForDate(date: LocalDate): Flow<Day?>
 
-    @Query("SELECT steps FROM days WHERE date BETWEEN :from AND :to")
+    @Query("SELECT * FROM days WHERE date BETWEEN :from AND :to")
     fun observeStepsForPeriod(
         from: LocalDate,
         to: LocalDate
     ): Flow<List<Day>>
 
-    @Query("SELECT steps FROM days")
+    @Query("SELECT * FROM days")
     fun observeAllSteps(): Flow<List<Day>>
 
     @Insert

@@ -44,4 +44,7 @@
     <string name="stat_grid_title">Мои рекорды</string>
     <string name="settings_permision">Выдать разрешения</string>
 
+    <!-- Домашний -->
+    <string name="home_steps">Шагов</string>
+
 </resources>
