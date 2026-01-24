@@ -1,17 +1,22 @@
 package com.example.na_steptracker.data.steps
 
+import com.example.na_steptracker.data.steps.daily.StepsDataSource
+import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSource
+import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.DaySteps
+import com.example.na_steptracker.domain.model.HourSteps
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 class StepsRepositoryImpl(
-    val source: StepsDataSource
+    val stepsSource: StepsDataSource,
+    val hourlyStepsSource: HourlyStepsDataSource,
 ) : StepsRepository {
     override fun observeStepsForDate(
         date: LocalDate
     ): Flow<DaySteps> {
-        return source.observeStepsForDate(date)
+        return stepsSource.observeStepsForDate(date)
             .map { day ->
                 DaySteps(
                     date = date,
@@ -24,9 +29,43 @@ class StepsRepositoryImpl(
         from: LocalDate,
         to: LocalDate
     ): Flow<List<DaySteps>> {
-        return source.observeStepsForPeriod(from, to)
+        return stepsSource.observeStepsForPeriod(from, to)
             .map { list ->
-                list.mapIndexed { index, day ->
+
+                val map = list.associateBy { it.date }
+
+                generateSequence(from) { it.plusDays(1) }
+                    .takeWhile { !it.isAfter(to) }
+                    .map { day ->
+                        DaySteps(
+                            date = day,
+                            steps = map[day]?.steps ?: 0
+                        )
+                    }
+                    .toList()
+            }
+    }
+
+    override fun observeHourlySteps(): Flow<List<HourSteps>> {
+        return hourlyStepsSource.observeHourlySteps()
+            .map { list ->
+
+                val map = list.associateBy { it.hour }
+
+                (0..23).map { hour ->
+                    HourSteps(
+                        hour = hour,
+                        steps = map[hour]?.steps ?: 0
+                    )
+                }
+                    .toList()
+            }
+    }
+
+    override fun observeRecordSteps(): Flow<List<DaySteps>> {
+        return stepsSource.observeRecordSteps()
+            .map { list ->
+                list.map { day ->
                     DaySteps(
                         date = day.date,
                         steps = day.steps

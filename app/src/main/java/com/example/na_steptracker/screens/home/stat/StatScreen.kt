@@ -1,4 +1,4 @@
-package com.example.na_steptracker.screens.base
+package com.example.na_steptracker.screens.home.stat
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
@@ -19,6 +19,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
@@ -28,40 +30,57 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.na_steptracker.App
 import com.example.na_steptracker.R
 import com.example.na_steptracker.components.RecordCard
 import com.example.na_steptracker.components.RecordCardModel
-import com.example.na_steptracker.screens.base.home.days
-import java.time.format.TextStyle
-import java.util.Locale
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 
 @Composable
 fun StatScreen() {
-    val cols = 3
+    val app = LocalContext.current.applicationContext as App
 
-    val gridData = List(18) { index -> index }
+    val viewModel: StatViewModel = viewModel(
+        factory = StatViewModelFactory(app.stepsRepository)
+    )
+
+    val weeklyChartModel by viewModel.weeklyChartModel.collectAsState()
+    val dailyChartModel by viewModel.dailyChartModel.collectAsState()
+    val recordsModel by viewModel.records.collectAsState()
+
+    Content(weeklyChartModel = weeklyChartModel, dailyChartModel = dailyChartModel, recordsModel = recordsModel)
+}
+
+@Composable
+fun Content(
+    weeklyChartModel: WeeklyChartModel,
+    dailyChartModel: DailyChartModel,
+    recordsModel: RecordsModel
+) {
+    val cols = 3
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(cols),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
 
         item(span = { GridItemSpan(cols) }) {
-            WeeklyChart()
+            WeeklyChart(weeklyChartModel)
         }
         item(span = { GridItemSpan(cols) }) {
-            DailyChart()
+            DailyChart(dailyChartModel)
         }
 
         item(span = { GridItemSpan(cols) }) {
@@ -75,25 +94,14 @@ fun StatScreen() {
             )
         }
 
-        val mockData = RecordCardModel.mockList
-
-        items(mockData) { record ->
+        items(recordsModel.records) { record ->
             RecordCard(record = record)
         }
     }
 }
 
-
-
 @Composable
-fun WeeklyChart() {
-
-    val chartPoints = days.map { day ->
-        ChartPoint(
-            label = day.dayOfTheWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-            value = day.steps
-        )
-    }
+fun WeeklyChart(weeklyChartModel: WeeklyChartModel) {
 
     Card(
         modifier = Modifier
@@ -110,27 +118,17 @@ fun WeeklyChart() {
                     style = MaterialTheme.typography.headlineSmall,
                 )
             }
-            SimpleBarChart(chartPoints = chartPoints, targetValue = 6000, canvasHeight = 120.dp)
+            SimpleBarChart(
+                chartPoints = weeklyChartModel.days,
+                targetValue = weeklyChartModel.target,
+                canvasHeight = 120.dp
+            )
         }
     }
 }
 
 @Composable
-fun DailyChart() {
-
-    fun Int.toHourLabel(): String {
-        return when (this) {
-            in 0..23 -> String.format("%02d:00", this)
-            else -> "??:??"
-        }
-    }
-
-    val chartPoints = List<ChartPoint>(24) { index ->
-        ChartPoint(
-            label = if (index != 0 && index % 6 == 0) index.toHourLabel() else null,
-            value = Random.nextInt(0..300)
-        )
-    }
+fun DailyChart(dailyChartModel: DailyChartModel) {
 
     Card(
         modifier = Modifier
@@ -147,15 +145,14 @@ fun DailyChart() {
                     style = MaterialTheme.typography.headlineSmall,
                 )
             }
-            SimpleBarChart(chartPoints = chartPoints, targetValue = null, canvasHeight = 60.dp)
+            SimpleBarChart(
+                chartPoints = dailyChartModel.hours,
+                targetValue = null,
+                canvasHeight = 60.dp
+            )
         }
     }
 }
-
-data class ChartPoint(
-    val label: String?,
-    val value: Int
-)
 
 @Composable
 fun SimpleBarChart(
@@ -248,26 +245,26 @@ fun SimpleBarChart(
                             )
                         )
 
-                        targetValue?.let { target ->
-                            val lineY = size.height - (target.toFloat() / maxValue) * size.height
-
-                            drawLine(
-                                color = targetLineColor,
-                                alpha = 1f,
-                                start = Offset(0f, lineY),
-                                end = Offset(size.width, lineY),
-                                strokeWidth = 1.dp.toPx(),
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f))
-                            )
-                            drawLine(
-                                alpha = 0.05f,
-                                color = axisColor,
-                                start = Offset(0f, size.height),
-                                end = Offset(size.width, size.height),
-                                strokeWidth = 1.dp.toPx(),
-                            )
-                        }
                     }
+                    targetValue?.let { target ->
+                        val lineY = size.height - (target.toFloat() / maxValue) * size.height
+
+                        drawLine(
+                            color = targetLineColor,
+                            alpha = 1f,
+                            start = Offset(0f, lineY),
+                            end = Offset(size.width, lineY),
+                            strokeWidth = 1.dp.toPx(),
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 5f))
+                        )
+                    }
+                    drawLine(
+                        alpha = 0.05f,
+                        color = axisColor,
+                        start = Offset(0f, size.height),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = 1.dp.toPx(),
+                    )
                 }
                 Row(
                     Modifier
@@ -300,7 +297,9 @@ fun SimpleBarChart(
 @Composable
 fun WeeklyStepsChartPreview() {
     MaterialTheme {
-        WeeklyChart()
+        WeeklyChart(
+            WeeklyChartModel(10, emptyList())
+        )
     }
 }
 
@@ -308,7 +307,9 @@ fun WeeklyStepsChartPreview() {
 @Composable
 fun DailyStepsChartPreview() {
     MaterialTheme {
-        DailyChart()
+        DailyChart(
+            DailyChartModel(emptyList())
+        )
     }
 }
 

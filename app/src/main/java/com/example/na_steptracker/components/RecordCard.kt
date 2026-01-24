@@ -72,7 +72,8 @@ fun RecordCard(
                 Text(
                     modifier = Modifier
                         .weight(0.75f),
-                    text = "${record.index}."
+                    text = ""
+//                    text = "${record.index}."
                 )
 
                 Icon(

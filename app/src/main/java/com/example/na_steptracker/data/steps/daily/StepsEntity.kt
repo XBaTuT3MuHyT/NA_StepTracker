@@ -1,4 +1,4 @@
-package com.example.na_steptracker.data.db
+package com.example.na_steptracker.data.steps.daily
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

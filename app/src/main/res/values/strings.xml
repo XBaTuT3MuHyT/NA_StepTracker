@@ -2,7 +2,7 @@
     <string name="app_name">NA_StepTracker</string>
     <string name="avg_steps">В среднем в день:</string>
     <!-- Настройки -->
-    <string name="settings_steps_goal">Цель по количеству шагов</string>
+    <string name="settings_steps_goal">Цель по шагам</string>
     <string name="settings_profile_title">Профиль</string>
     <string name="settings_profile_steps">Шагов</string>
     <string name="settings_profile_ccal">Ккал</string>

@@ -1,7 +1,5 @@
-package com.example.na_steptracker.data.steps
+package com.example.na_steptracker.data.steps.daily
 
-import com.example.na_steptracker.data.db.Day
-import com.example.na_steptracker.data.db.StepsDao
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -27,5 +25,9 @@ class StepsDataSourceImpl(
         to: LocalDate
     ): Flow<List<Day>> {
         return stepsDao.observeStepsForPeriod(from, to)
+    }
+
+    override fun observeRecordSteps(): Flow<List<Day>> {
+        return stepsDao.observeRecordSteps()
     }
 }

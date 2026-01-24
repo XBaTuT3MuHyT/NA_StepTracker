@@ -1,4 +1,4 @@
-package com.example.na_steptracker.screens.base
+package com.example.na_steptracker.screens.home.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -134,7 +134,8 @@ fun Setting(
 fun SettingsList(items: List<SettingModel>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {

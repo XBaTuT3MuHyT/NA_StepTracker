@@ -1,16 +1,16 @@
-package com.example.na_steptracker.screens.base.home
+package com.example.na_steptracker.screens.home.stat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.na_steptracker.data.steps.StepsRepository
+import com.example.na_steptracker.domain.StepsRepository
 
-class HomeViewModelFactory(
+class StatViewModelFactory(
     private val repository: StepsRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(repository) as T
+        if (modelClass.isAssignableFrom(StatViewModel::class.java)) {
+            return StatViewModel(repository) as T
         }
         error("Unknown ViewModel")
     }

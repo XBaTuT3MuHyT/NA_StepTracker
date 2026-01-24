@@ -1,8 +1,7 @@
-package com.example.na_steptracker.data.steps
+package com.example.na_steptracker.domain
 
-import android.icu.util.LocaleData
-import androidx.compose.ui.text.intl.Locale
 import com.example.na_steptracker.domain.model.DaySteps
+import com.example.na_steptracker.domain.model.HourSteps
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -14,4 +13,7 @@ interface StepsRepository {
         from: LocalDate,
         to: LocalDate,
     ): Flow<List<DaySteps>>
+    fun observeHourlySteps(): Flow<List<HourSteps>>
+
+    fun observeRecordSteps(): Flow<List<DaySteps>>
 }

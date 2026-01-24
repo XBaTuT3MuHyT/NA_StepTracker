@@ -2,8 +2,9 @@ package com.example.na_steptracker
 
 import android.app.Application
 import com.example.na_steptracker.data.db.DataBase
-import com.example.na_steptracker.data.steps.StepsDataSourceImpl
+import com.example.na_steptracker.data.steps.daily.StepsDataSourceImpl
 import com.example.na_steptracker.data.steps.StepsRepositoryImpl
+import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSourceImpl
 
 class App: Application() {
 
@@ -15,12 +16,20 @@ class App: Application() {
         database.stepsDao()
     }
 
+    val hourlyStepsDao by lazy {
+        database.hourlyStepsDao()
+    }
+
     val stepsDataSource by lazy {
         StepsDataSourceImpl(stepsDao)
     }
 
+    val hourlyStepsDataSource by lazy {
+        HourlyStepsDataSourceImpl(hourlyStepsDao)
+    }
+
     val stepsRepository by lazy {
-        StepsRepositoryImpl(stepsDataSource)
+        StepsRepositoryImpl(stepsDataSource, hourlyStepsDataSource)
     }
 
 }

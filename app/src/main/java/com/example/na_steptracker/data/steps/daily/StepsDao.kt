@@ -1,4 +1,4 @@
-package com.example.na_steptracker.data.db
+package com.example.na_steptracker.data.steps.daily
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -18,6 +18,9 @@ interface StepsDao {
         from: LocalDate,
         to: LocalDate
     ): Flow<List<Day>>
+
+    @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
+    fun observeRecordSteps(): Flow<List<Day>>
 
     @Query("SELECT * FROM days")
     fun observeAllSteps(): Flow<List<Day>>

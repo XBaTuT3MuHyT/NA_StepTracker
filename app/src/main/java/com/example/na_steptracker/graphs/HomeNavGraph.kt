@@ -10,9 +10,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.na_steptracker.R
-import com.example.na_steptracker.screens.base.home.HomeScreen
-import com.example.na_steptracker.screens.base.SettingsScreen
-import com.example.na_steptracker.screens.base.StatScreen
+import com.example.na_steptracker.screens.home.home.HomeScreen
+import com.example.na_steptracker.screens.home.settings.SettingsScreen
+import com.example.na_steptracker.screens.home.stat.StatScreen
 import androidx.annotation.StringRes
 
 fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
@@ -20,7 +20,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
         route = Graph.HOME,
         startDestination = "homeScreen",
     ) {
-        composable(BottomBarScreen.Home.route) { HomeScreen(navController) }
+        composable(BottomBarScreen.Home.route) { HomeScreen() }
         composable(BottomBarScreen.Stat.route) { StatScreen() }
         composable(BottomBarScreen.Settings.route) { SettingsScreen(navController) }
     }

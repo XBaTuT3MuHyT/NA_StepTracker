@@ -1,4 +1,4 @@
-package com.example.na_steptracker.screens.base.home
+package com.example.na_steptracker.screens.home.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,20 +38,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen() {
     val app = LocalContext.current.applicationContext as App
 
     val viewModel: HomeViewModel = viewModel(
@@ -59,7 +56,9 @@ fun HomeScreen(navController: NavController) {
     )
 
     val dailyModel by viewModel.dailyModel.collectAsState()
-    Content(dailyModel)
+    val weeklyModel by viewModel.weeklyModel.collectAsState()
+
+    Content(dailyModel, weeklyModel)
 }
 
 data class Day(val steps: Int, val dayOfTheWeek: DayOfWeek)
@@ -74,13 +73,15 @@ val days = List(7) { index ->
 }.reversed()
 
 @Composable
-fun Content(dailyModel: DailyUiModel) {
+fun Content(dailyModel: DailyUiModel, weeklyModel: WeeklyModel) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 8.dp)
     ) {
         DailyStat(dailyModel)
-        WeaklyStat(days)
+        WeaklyStat(weeklyModel)
     }
 }
 
@@ -141,7 +142,7 @@ fun DailyStat(dailyModel: DailyUiModel) {
 }
 
 @Composable
-fun WeaklyStat(days: List<Day>) {
+fun WeaklyStat(weeklyModel: WeeklyModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,7 +159,7 @@ fun WeaklyStat(days: List<Day>) {
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = (" 5632"),
+                    text = (" ${weeklyModel.averageSteps}"),
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -169,26 +170,18 @@ fun WeaklyStat(days: List<Day>) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                for (day in days) {
+                for (day in weeklyModel.days) {
 
-                    val progress = day.steps.toFloat() / 6000
+                    val progress = day.first
                     val alphaMod: Float = if (progress >= 1) 1f else 0.5f
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         ProgressWithCenterDot(progress)
-//                        CircularProgressIndicator(
-//                            modifier = Modifier
-//                                .padding(0.dp, 8.dp)
-//                                .size(30.dp),
-//                            progress = { progress },
-//                        )
+
                         Text(
-                            text = day.dayOfTheWeek.getDisplayName(
-                                TextStyle.SHORT,
-                                Locale.getDefault()
-                            ),
+                            text = day.second,
                             modifier = Modifier.alpha(alphaMod)
                         )
                     }
@@ -240,7 +233,9 @@ fun HomeScreenPreview() {
 @Composable
 fun WeaklyStatPreview() {
     NA_StepTrackerTheme {
-        WeaklyStat(days)
+        WeaklyStat(
+            WeeklyModel(1234, emptyList())
+        )
     }
 }
 
