@@ -5,9 +5,8 @@ import java.time.LocalDate
 
 interface StepsDataSource {
 
-    suspend fun saveSteps(
-        date: LocalDate,
-        steps: Int,
+    suspend fun saveStepsDay(
+        day: Day
     )
 
     fun observeStepsForDate(

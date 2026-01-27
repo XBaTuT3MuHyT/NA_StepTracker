@@ -1,6 +1,11 @@
 package com.example.na_steptracker.data.steps
 
+import com.example.na_steptracker.data.prefs.stepsPrefs.PrefsDataSource
+import com.example.na_steptracker.data.steps.daily.Day
+import com.example.na_steptracker.data.steps.daily.StepsDao
 import com.example.na_steptracker.data.steps.daily.StepsDataSource
+import com.example.na_steptracker.data.steps.hourly.HourlySteps
+import com.example.na_steptracker.data.steps.hourly.HourlyStepsDao
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSource
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.DaySteps
@@ -12,7 +17,9 @@ import java.time.LocalDate
 class StepsRepositoryImpl(
     val stepsSource: StepsDataSource,
     val hourlyStepsSource: HourlyStepsDataSource,
+    val prefsDataSource: PrefsDataSource,
 ) : StepsRepository {
+
     override fun observeStepsForDate(
         date: LocalDate
     ): Flow<DaySteps> {
@@ -72,5 +79,23 @@ class StepsRepositoryImpl(
                     )
                 }
             }
+    }
+
+    override suspend fun saveHour(hour: Int, steps: Int) {
+        hourlyStepsSource.insertStepsForHour(
+            HourlySteps(
+                hour = hour,
+                steps = steps
+            )
+        )
+    }
+
+    override suspend fun saveDay(date: LocalDate, steps: Int) {
+        stepsSource.saveStepsDay(
+            Day(
+                date = date,
+                steps = steps
+            )
+        )
     }
 }

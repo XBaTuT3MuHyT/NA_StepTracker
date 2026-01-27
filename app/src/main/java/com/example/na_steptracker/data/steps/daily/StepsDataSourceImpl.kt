@@ -7,13 +7,8 @@ class StepsDataSourceImpl(
     private val stepsDao: StepsDao
 ) : StepsDataSource {
 
-    override suspend fun saveSteps(date: LocalDate, steps: Int) {
-        stepsDao.insertSteps(
-            Day(
-                date,
-                steps,
-            )
-        )
+    override suspend fun saveStepsDay(day: Day) {
+        stepsDao.insertSteps(day)
     }
 
     override fun observeStepsForDate(date: LocalDate): Flow<Day?> {

@@ -6,6 +6,10 @@ class HourlyStepsDataSourceImpl(
     private val hourlyStepsDao: HourlyStepsDao
 ) : HourlyStepsDataSource {
 
+    override suspend fun saveStepsHour(hourlySteps: HourlySteps) {
+        hourlyStepsDao.insertStepsForHour(hourlySteps)
+    }
+
     override fun observeHourlySteps(): Flow<List<HourlySteps>> {
         return hourlyStepsDao.observeHourlySteps()
     }

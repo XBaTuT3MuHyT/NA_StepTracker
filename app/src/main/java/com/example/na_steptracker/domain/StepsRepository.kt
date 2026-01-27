@@ -14,6 +14,13 @@ interface StepsRepository {
         to: LocalDate,
     ): Flow<List<DaySteps>>
     fun observeHourlySteps(): Flow<List<HourSteps>>
-
     fun observeRecordSteps(): Flow<List<DaySteps>>
+    suspend fun saveHour(
+        hour: Int,
+        steps: Int,
+        )
+    suspend fun saveDay(
+        date: LocalDate,
+        steps: Int,
+    )
 }

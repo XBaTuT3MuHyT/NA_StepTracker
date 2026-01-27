@@ -3,6 +3,7 @@ package com.example.na_steptracker.data.steps.daily
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -25,7 +26,7 @@ interface StepsDao {
     @Query("SELECT * FROM days")
     fun observeAllSteps(): Flow<List<Day>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSteps(day: Day)
 
     @Delete
