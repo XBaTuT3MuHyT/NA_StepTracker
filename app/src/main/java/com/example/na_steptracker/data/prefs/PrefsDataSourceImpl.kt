@@ -1,5 +1,6 @@
-package com.example.na_steptracker.data.prefs.stepsPrefs
+package com.example.na_steptracker.data.prefs
 
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
 import kotlinx.coroutines.flow.Flow
 
 class PrefsDataSourceImpl(

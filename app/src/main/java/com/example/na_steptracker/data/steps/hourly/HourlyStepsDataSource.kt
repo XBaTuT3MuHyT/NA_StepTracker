@@ -9,4 +9,6 @@ interface HourlyStepsDataSource {
     fun observeHourlySteps() : Flow<List<HourlySteps>>
 
     suspend fun insertStepsForHour(hourlySteps: HourlySteps)
+
+    suspend fun deleteAll()
 }

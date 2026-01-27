@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -16,13 +15,9 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
-import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefsImpl
-import com.example.na_steptracker.data.steps.StepsRepositoryImpl
-import com.example.na_steptracker.domain.StepsCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import java.security.Provider
 
 class StepsForegroundService : Service(), SensorEventListener {
     companion object {

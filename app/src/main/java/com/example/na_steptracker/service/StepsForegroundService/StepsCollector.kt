@@ -1,9 +1,9 @@
-package com.example.na_steptracker.domain
+package com.example.na_steptracker.service.StepsForegroundService
 
 import android.util.Log
 import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
+import com.example.na_steptracker.domain.StepsRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -25,35 +25,31 @@ class StepsCollector(
     private val stepsPrefs: StepsPrefs,
     private val scope: CoroutineScope
 ) {
-    private var state: StateFlow<StepsState>
-
-    init {
-        state = combine(
-            stepsPrefs.lastSensorValue,
-            stepsPrefs.lastSavedDate,
-            stepsPrefs.lastSavedHour,
-            stepsPrefs.currentDateSteps,
-            stepsPrefs.currentHourSteps,
-        ) { sensor, date, hour, d, h ->
-            StepsState(
-                lastSensor = sensor,
-                lastDate = date,
-                lastHour = hour,
-                daySteps = d,
-                hourSteps = h
-            )
-        }.stateIn(
-            scope,
-            SharingStarted.Eagerly,
-            StepsState(
-                lastSensor = null,
-                lastDate = LocalDate.now(),
-                lastHour = LocalDateTime.now().hour,
-                daySteps = 0,
-                hourSteps = 0
-            )
+    private var state: StateFlow<StepsState> = combine(
+        stepsPrefs.lastSensorValue,
+        stepsPrefs.lastSavedDate,
+        stepsPrefs.lastSavedHour,
+        stepsPrefs.currentDateSteps,
+        stepsPrefs.currentHourSteps,
+    ) { sensor, date, hour, d, h ->
+        StepsState(
+            lastSensor = sensor,
+            lastDate = date,
+            lastHour = hour,
+            daySteps = d,
+            hourSteps = h
         )
-    }
+    }.stateIn(
+        scope,
+        SharingStarted.Eagerly,
+        StepsState(
+            lastSensor = null,
+            lastDate = LocalDate.now(),
+            lastHour = LocalDateTime.now().hour,
+            daySteps = 0,
+            hourSteps = 0
+        )
+    )
 
     fun onNewSensorValue(newValue: Int) {
         val s = state.value
@@ -96,6 +92,8 @@ class StepsCollector(
                     date = s.lastDate,
                     steps = s.daySteps
                 )
+
+                stepsRepository.deleteAllHours()
 
                 stepsPrefs.saveDay(
                     lastSensorValue = newValue,

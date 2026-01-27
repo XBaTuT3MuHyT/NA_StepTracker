@@ -23,4 +23,5 @@ interface StepsRepository {
         date: LocalDate,
         steps: Int,
     )
+    suspend fun deleteAllHours()
 }

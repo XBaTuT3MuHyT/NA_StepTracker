@@ -17,4 +17,8 @@ class HourlyStepsDataSourceImpl(
     override suspend fun insertStepsForHour(hourlySteps: HourlySteps) {
         hourlyStepsDao.insertStepsForHour(hourlySteps)
     }
+
+    override suspend fun deleteAll() {
+        hourlyStepsDao.deleteAll()
+    }
 }

@@ -2,7 +2,7 @@ package com.example.na_steptracker
 
 import android.app.Application
 import com.example.na_steptracker.data.db.DataBase
-import com.example.na_steptracker.data.prefs.stepsPrefs.PrefsDataSourceImpl
+import com.example.na_steptracker.data.prefs.PrefsDataSourceImpl
 import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefsImpl
 import com.example.na_steptracker.data.steps.daily.StepsDataSourceImpl
 import com.example.na_steptracker.data.steps.StepsRepositoryImpl

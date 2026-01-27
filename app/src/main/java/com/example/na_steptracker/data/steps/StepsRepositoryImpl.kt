@@ -1,18 +1,21 @@
 package com.example.na_steptracker.data.steps
 
-import com.example.na_steptracker.data.prefs.stepsPrefs.PrefsDataSource
+import com.example.na_steptracker.data.prefs.PrefsDataSource
 import com.example.na_steptracker.data.steps.daily.Day
-import com.example.na_steptracker.data.steps.daily.StepsDao
 import com.example.na_steptracker.data.steps.daily.StepsDataSource
 import com.example.na_steptracker.data.steps.hourly.HourlySteps
-import com.example.na_steptracker.data.steps.hourly.HourlyStepsDao
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSource
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.DaySteps
 import com.example.na_steptracker.domain.model.HourSteps
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class StepsRepositoryImpl(
     val stepsSource: StepsDataSource,
@@ -20,53 +23,107 @@ class StepsRepositoryImpl(
     val prefsDataSource: PrefsDataSource,
 ) : StepsRepository {
 
+    fun currentHourFlow(): Flow<Int> = flow {
+        while (true) {
+            emit(LocalDateTime.now().hour)
+            delay(1_000)
+        }
+    }.distinctUntilChanged()
+
+    fun currentDateFlow(): Flow<LocalDate> = flow {
+        while (true) {
+            emit(LocalDate.now())
+            delay(1_000)
+        }
+    }.distinctUntilChanged()
+
     override fun observeStepsForDate(
         date: LocalDate
     ): Flow<DaySteps> {
-        return stepsSource.observeStepsForDate(date)
-            .map { day ->
-                DaySteps(
-                    date = date,
-                    steps = day?.steps ?: 0,
-                )
-            }
+        return if (date == LocalDate.now()) {
+            prefsDataSource.observeTodaySteps()
+                .map { steps ->
+                    DaySteps(
+                        date = date,
+                        steps = steps
+                    )
+                }
+        } else {
+            stepsSource.observeStepsForDate(date)
+                .map { day ->
+                    DaySteps(
+                        date = date,
+                        steps = day?.steps ?: 0,
+                    )
+                }
+        }
     }
 
     override fun observeStepsForPeriod(
         from: LocalDate,
         to: LocalDate
     ): Flow<List<DaySteps>> {
-        return stepsSource.observeStepsForPeriod(from, to)
-            .map { list ->
 
-                val map = list.associateBy { it.date }
+        return combine(
+            stepsSource.observeStepsForPeriod(from, to),
+            prefsDataSource.observeTodaySteps(),
+            currentDateFlow(),
+        ) { dbDays, todaySteps, today ->
 
-                generateSequence(from) { it.plusDays(1) }
-                    .takeWhile { !it.isAfter(to) }
-                    .map { day ->
-                        DaySteps(
-                            date = day,
-                            steps = map[day]?.steps ?: 0
-                        )
+            val dbMap = dbDays.associateBy { it.date }
+
+            generateSequence(from) { it.plusDays(1) }
+                .takeWhile { !it.isAfter(to) }
+                .map { date ->
+                    when {
+                        date == today -> {
+                            DaySteps(
+                                date = date,
+                                steps = todaySteps
+                            )
+                        }
+
+                        else -> {
+                            DaySteps(
+                                date = date,
+                                steps = dbMap[date]?.steps ?: 0
+                            )
+                        }
                     }
-                    .toList()
-            }
+                }
+                .toList()
+        }
     }
 
     override fun observeHourlySteps(): Flow<List<HourSteps>> {
-        return hourlyStepsSource.observeHourlySteps()
-            .map { list ->
+        return combine(
+            hourlyStepsSource.observeHourlySteps(),
+            prefsDataSource.observeThisHourSteps(),
+            currentHourFlow(),
+        ) { dbHours, thisHour, now ->
+            val map = dbHours.associateBy { it.hour }
 
-                val map = list.associateBy { it.hour }
+            (0..23).map { hour ->
+                when {
+                    hour == now -> {
+                        HourSteps(
+                            hour = now,
+                            steps = thisHour
+                        )
+                    }
 
-                (0..23).map { hour ->
-                    HourSteps(
-                        hour = hour,
-                        steps = map[hour]?.steps ?: 0
-                    )
+                    else -> {
+                        HourSteps(
+                            hour = hour,
+                            steps = map[hour]?.steps ?: 0
+                        )
+                    }
                 }
-                    .toList()
+
             }
+                .toList()
+        }
+
     }
 
     override fun observeRecordSteps(): Flow<List<DaySteps>> {
@@ -97,5 +154,9 @@ class StepsRepositoryImpl(
                 steps = steps
             )
         )
+    }
+
+    override suspend fun deleteAllHours() {
+        hourlyStepsSource.deleteAll()
     }
 }
