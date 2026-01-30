@@ -1,0 +1,9 @@
+package com.example.na_steptracker.screens.home.settings
+
+sealed interface SettingsUiEvent {
+    data class OnGoalSelected(val goal: Int) : SettingsUiEvent
+    data class OnLanguageSelected(val language: AppLanguage): SettingsUiEvent
+    data class OnNameValueChanged(val content: String): SettingsUiEvent
+    data class OnSurnameValueChanged(val content: String): SettingsUiEvent
+    object OnClickExit: SettingsUiEvent
+}

@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,20 +41,66 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.na_steptracker.App
 import com.example.na_steptracker.R
-import com.example.na_steptracker.graphs.Graph
-import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
-data class SettingModel(
+@Composable
+fun SettingsScreen(navController: NavController) {
+    val app = LocalContext.current.applicationContext as App
+    val viewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModelFactory(app.prefsDataSource, navController)
+    )
+    val state by viewModel.state.collectAsState()
+
+    Content(
+        items = SettingsProvider.provide(
+            state = state,
+            onEvent = { viewModel.onEvent(it) }
+        ),
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+@Composable
+fun Content(
+    items: List<SettingSample>,
+    state: SettingsUiState,
+    onEvent: (SettingsUiEvent) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            ProfileSetting(
+                profileModel = state.profile,
+                onExit = { onEvent(SettingsUiEvent.OnClickExit) },
+                onNameValueChanged = { onEvent(SettingsUiEvent.OnNameValueChanged(it)) },
+                onSurnameValueChanged = { onEvent(SettingsUiEvent.OnSurnameValueChanged(it)) }
+            )
+        }
+
+        items(items) { item ->
+            Setting(
+                settingSample = item,
+            )
+        }
+    }
+}
+
+data class SettingSample(
     val titleRes: Int,
     val icon: ImageVector? = null,
     val dropDown: (@Composable () -> Unit)? = null,
@@ -61,28 +108,36 @@ data class SettingModel(
 
 object SettingsProvider {
 
-    val settings = listOf(
-        SettingModel(
+    fun provide (
+        state: SettingsUiState,
+        onEvent: (SettingsUiEvent) -> Unit
+    ): List<SettingSample> = listOf(
+        SettingSample(
             titleRes = R.string.settings_steps_goal,
             icon = Icons.Default.MyLocation,
             dropDown = {
                 SettingsDropDown(
                     items = (2000..15000 step 500).map { it.toString() },
-                    selectedIndex = 0,
+                    selectedItem = state.settings.selectedSteps.toString(),
+                    onItemSelected = { onEvent(SettingsUiEvent.OnGoalSelected(it.toInt())) },
                 )
             }
         ),
-        SettingModel(
+        SettingSample(
             titleRes = R.string.settings_select_language,
             icon = Icons.Default.Language,
             dropDown = {
                 SettingsDropDown(
-                    items = listOf("Русский", "English"),
-                    selectedIndex = 0,
+                    items = AppLanguage.entries.map { it.displayName},
+                    selectedItem = state.settings.selectedLanguage.displayName,
+                    onItemSelected = { selectedName ->
+                        val language = AppLanguage.fromDisplayName(selectedName)
+                        language?.let { onEvent(SettingsUiEvent.OnLanguageSelected(it)) }
+                    }
                 )
             }
         ),
-        SettingModel(
+        SettingSample(
             titleRes = R.string.settings_permision,
             icon = Icons.Default.LockOpen,
         ),
@@ -90,13 +145,8 @@ object SettingsProvider {
 }
 
 @Composable
-fun SettingsScreen(navController: NavController) {
-    SettingsList(SettingsProvider.settings, navController)
-}
-
-@Composable
 fun Setting(
-    settingModel: SettingModel
+    settingSample: SettingSample
 ) {
     Card(
         modifier = Modifier
@@ -110,7 +160,7 @@ fun Setting(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            settingModel.icon?.let {
+            settingSample.icon?.let {
                 Icon(
                     imageVector = it,
                     contentDescription = null
@@ -118,10 +168,10 @@ fun Setting(
                 Spacer(modifier = Modifier.width(16.dp))
             }
             Text(
-                text = stringResource(settingModel.titleRes),
+                text = stringResource(settingSample.titleRes),
             )
             Spacer(modifier = Modifier.weight(1f))
-            settingModel.dropDown?.let {
+            settingSample.dropDown?.let {
                 it()
             }
 
@@ -129,49 +179,13 @@ fun Setting(
     }
 }
 
-
 @Composable
-fun SettingsList(items: List<SettingModel>, navController: NavController) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+fun ProfileSetting(
+    profileModel: ProfileModel,
+    onExit: () -> Unit,
+    onNameValueChanged: (String) -> Unit,
+    onSurnameValueChanged: (String) -> Unit,
     ) {
-        item {
-            ProfileSetting(navController)
-        }
-//        item {
-//            Card(
-//                modifier = Modifier
-//                    .height(72.dp)
-//                    .fillMaxWidth(),
-//                shape = RoundedCornerShape(16.dp),
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(16.dp),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    Text(
-//                        text = stringResource(R.string.settings_steps_goal),
-//                    )
-//                    SettingsDropDown()
-//                }
-//            }
-//        }
-        items(items) { item ->
-            Setting(
-                settingModel = item,
-            )
-        }
-    }
-}
-
-@Composable
-fun ProfileSetting(navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -203,7 +217,7 @@ fun ProfileSetting(navController: NavController) {
                 ) {
                     Column {
                         Text(
-                            text = "5632",
+                            text = "${profileModel.steps}",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -240,7 +254,7 @@ fun ProfileSetting(navController: NavController) {
                     contentDescription = null
                 )
                 Text(
-                    text = "Имя Фамилия",
+                    text = "${profileModel.name} ${profileModel.surname}",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -249,17 +263,23 @@ fun ProfileSetting(navController: NavController) {
         }
     }
     if (showDialog) {
-        ProfileDialog(navController) { showDialog = false }
+        ProfileDialog(
+            profileModel = profileModel,
+            onDismiss = {showDialog = false},
+            onExit = { onExit() },
+            onNameValueChanged = { onNameValueChanged(it) },
+            onSurnameValueChanged = { onSurnameValueChanged(it) },
+        )
     }
 }
 
 @Composable
 fun SettingsDropDown(
     items: List<String>,
-    selectedIndex: Int,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(items[selectedIndex]) }
 
     Box(
         modifier = Modifier.wrapContentSize()
@@ -289,7 +309,7 @@ fun SettingsDropDown(
                 DropdownMenuItem(
                     text = { Text(item) },
                     onClick = {
-                        selectedItem = item
+                        onItemSelected(item)
                         expanded = false
                     }
                 )
@@ -299,10 +319,14 @@ fun SettingsDropDown(
 }
 
 @Composable
-fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
+fun ProfileDialog(
+    profileModel: ProfileModel,
+    onDismiss: () -> Unit,
+    onExit: () -> Unit,
+    onNameValueChanged: (String) -> Unit,
+    onSurnameValueChanged: (String) -> Unit,
+) {
 
-    var name by remember { mutableStateOf("имя") }
-    var surname by remember { mutableStateOf("фамилия") }
     Dialog(
         onDismissRequest = onDismiss
     ) {
@@ -328,20 +352,16 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { newName ->
-                        name = newName
-                    },
+                    value = profileModel.name,
+                    onValueChange = {onNameValueChanged(it)},
                     label = { Text(stringResource(R.string.settings_profile_dialog_name)) },
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
-                    value = surname,
-                    onValueChange = { newSurname ->
-                        surname = newSurname
-                    },
+                    value = profileModel.surname,
+                    onValueChange = { onSurnameValueChanged(it) },
                     label = { Text(stringResource(R.string.settings_profile_dialog_surname)) },
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,
@@ -351,9 +371,7 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
                 Button(
                     onClick = {
                         onDismiss()
-                        navController.navigate(Graph.AUTH) {
-                            popUpTo(0)
-                        }
+                        onExit()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -371,23 +389,23 @@ fun ProfileDialog(navController: NavController, onDismiss: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DropDownPreview() {
-    val navController = rememberNavController()
-    NA_StepTrackerTheme {
-        ProfileSetting(navController)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DialogPreview() {
-    NA_StepTrackerTheme {
-        val navController = rememberNavController()
-        ProfileDialog(navController) {}
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DropDownPreview() {
+//    val navController = rememberNavController()
+//    NA_StepTrackerTheme {
+//        ProfileSetting(navController)
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun DialogPreview() {
+//    NA_StepTrackerTheme {
+//        val navController = rememberNavController()
+//        ProfileDialog(navController) {}
+//    }
+//}
 
 //@Preview(showBackground = true)
 //@Composable
