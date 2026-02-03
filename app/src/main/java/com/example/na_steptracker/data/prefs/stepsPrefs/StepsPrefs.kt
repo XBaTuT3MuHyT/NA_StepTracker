@@ -5,9 +5,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
-val Context.stepsDataStore by preferencesDataStore(
-    name = "steps_store"
-)
 interface StepsPrefs {
     val lastSensorValue: Flow<Int?>
     val lastSavedDate: Flow<LocalDate>

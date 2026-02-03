@@ -1,18 +1,21 @@
-package com.example.na_steptracker.data.prefs.stepsPrefs
+package com.example.na_steptracker.data.prefs
 
 import android.content.Context
+import androidx.compose.ui.input.key.Key
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.na_steptracker.data.prefs.settingsPrefs.SettingsPrefs
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class StepsPrefsImpl(
+class PrefsImpl(
     context: Context
-): StepsDisplayPrefs, StepsPrefs {
+) : StepsPrefs, SettingsPrefs {
 
     val Context.stepsDataStore by preferencesDataStore(
         name = "steps_store"
@@ -25,6 +28,10 @@ class StepsPrefsImpl(
         val LAST_DATE = stringPreferencesKey("last_date")
         val HOUR_STEPS = intPreferencesKey("hour_steps")
         val DATE_STEPS = intPreferencesKey("date_steps")
+        val NAME = stringPreferencesKey("name")
+        val SURNAME = stringPreferencesKey("surname")
+        val GOAL = intPreferencesKey("goal")
+        val LANGUAGE = stringPreferencesKey("language")
     }
 
     override val lastSensorValue: Flow<Int?> =
@@ -87,6 +94,44 @@ class StepsPrefsImpl(
             prefs[Keys.LAST_SENSOR_STEPS] = lastSensorValue
             prefs[Keys.LAST_DATE] = lastSavedDate.toString()
             prefs[Keys.DATE_STEPS] = currentDateSteps
+        }
+    }
+
+    override val goal: Flow<Int> =
+        dataStore.data.map { pref ->
+            pref[Keys.GOAL]?: 0
+        }
+
+    override val language: Flow<String> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.LANGUAGE]?: ""
+        }
+    override val name: Flow<String> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.NAME]?: ""
+        }
+
+    override val surname: Flow<String> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.SURNAME]?: ""
+        }
+
+    override suspend fun saveProfile(name: String, surname: String) {
+        dataStore.edit { preferences ->
+            preferences[Keys.SURNAME] = surname
+            preferences[Keys.NAME] = name
+        }
+    }
+
+    override suspend fun saveGoal(goal: Int) {
+        dataStore.edit { preferences ->
+            preferences[Keys.GOAL] = goal
+        }
+    }
+
+    override suspend fun saveLanguage(language: String) {
+        dataStore.edit { preferences ->
+            preferences[Keys.LANGUAGE] = language
         }
     }
 }
