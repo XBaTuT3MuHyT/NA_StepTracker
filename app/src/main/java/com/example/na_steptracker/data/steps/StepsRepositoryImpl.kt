@@ -1,6 +1,7 @@
 package com.example.na_steptracker.data.steps
 
-import com.example.na_steptracker.data.prefs.PrefsDataSource
+import com.example.na_steptracker.data.prefs.settingsPrefs.SettingsPrefs
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsDisplayPrefs
 import com.example.na_steptracker.data.steps.daily.Day
 import com.example.na_steptracker.data.steps.daily.StepsDataSource
 import com.example.na_steptracker.data.steps.hourly.HourlySteps
@@ -8,6 +9,7 @@ import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSource
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.DaySteps
 import com.example.na_steptracker.domain.model.HourSteps
+import com.example.na_steptracker.domain.model.Profile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -20,7 +22,8 @@ import java.time.LocalDateTime
 class StepsRepositoryImpl(
     val stepsSource: StepsDataSource,
     val hourlyStepsSource: HourlyStepsDataSource,
-    val prefsDataSource: PrefsDataSource,
+    val stepsDisplayPrefs: StepsDisplayPrefs,
+    val settingsPrefs: SettingsPrefs,
 ) : StepsRepository {
 
     fun currentHourFlow(): Flow<Int> = flow {
@@ -41,7 +44,7 @@ class StepsRepositoryImpl(
         date: LocalDate
     ): Flow<DaySteps> {
         return if (date == LocalDate.now()) {
-            prefsDataSource.observeTodaySteps()
+            stepsDisplayPrefs.currentDateSteps
                 .map { steps ->
                     DaySteps(
                         date = date,
@@ -66,7 +69,7 @@ class StepsRepositoryImpl(
 
         return combine(
             stepsSource.observeStepsForPeriod(from, to),
-            prefsDataSource.observeTodaySteps(),
+            stepsDisplayPrefs.currentDateSteps,
             currentDateFlow(),
         ) { dbDays, todaySteps, today ->
 
@@ -98,7 +101,7 @@ class StepsRepositoryImpl(
     override fun observeHourlySteps(): Flow<List<HourSteps>> {
         return combine(
             hourlyStepsSource.observeHourlySteps(),
-            prefsDataSource.observeThisHourSteps(),
+            stepsDisplayPrefs.currentHourSteps,
             currentHourFlow(),
         ) { dbHours, thisHour, now ->
             val map = dbHours.associateBy { it.hour }
@@ -138,6 +141,26 @@ class StepsRepositoryImpl(
             }
     }
 
+    override fun observeProfile(): Flow<Profile> {
+        return combine(
+            settingsPrefs.surname,
+            settingsPrefs.name
+        ) {sur, name ->
+            Profile(
+                name = name,
+                surname = sur,
+            )
+        }
+    }
+
+    override fun observeGoal(): Flow<Int> {
+        return settingsPrefs.goal
+    }
+
+    override fun observeLanguage(): Flow<String> {
+        return settingsPrefs.language
+    }
+
     override suspend fun saveHour(hour: Int, steps: Int) {
         hourlyStepsSource.insertStepsForHour(
             HourlySteps(
@@ -154,6 +177,21 @@ class StepsRepositoryImpl(
                 steps = steps
             )
         )
+    }
+
+    override suspend fun saveProfile(profile: Profile) {
+        settingsPrefs.saveProfile(
+            name = profile.name,
+            surname = profile.surname
+        )
+    }
+
+    override suspend fun saveGoal(goal: Int) {
+        settingsPrefs.saveGoal(goal)
+    }
+
+    override suspend fun saveLanguage(language: String) {
+        settingsPrefs.saveLanguage(language)
     }
 
     override suspend fun deleteAllHours() {

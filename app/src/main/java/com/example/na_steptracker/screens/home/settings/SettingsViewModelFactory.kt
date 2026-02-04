@@ -3,7 +3,6 @@ package com.example.na_steptracker.screens.home.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import com.example.na_steptracker.data.prefs.PrefsDataSource
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.screens.home.home.HomeViewModel
 

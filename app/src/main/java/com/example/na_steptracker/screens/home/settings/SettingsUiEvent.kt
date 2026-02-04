@@ -1,5 +1,7 @@
 package com.example.na_steptracker.screens.home.settings
 
+import com.example.na_steptracker.domain.model.AppLanguage
+
 sealed interface SettingsUiEvent {
     data class OnGoalSelected(val goal: Int) : SettingsUiEvent
     data class OnLanguageSelected(val language: AppLanguage): SettingsUiEvent

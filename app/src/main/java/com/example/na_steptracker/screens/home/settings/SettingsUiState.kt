@@ -1,8 +1,10 @@
 package com.example.na_steptracker.screens.home.settings
 
+import com.example.na_steptracker.domain.model.AppLanguage
 import java.util.Locale
 
 data class SettingsUiState(
+    val isLoading: Boolean = true,
     val profile: ProfileModel = ProfileModel(),
     val settings: SettingsModel = SettingsModel()
 )
@@ -17,23 +19,3 @@ data class SettingsModel(
     val selectedSteps: Int = 1000,
     val selectedLanguage: AppLanguage = AppLanguage.RU,
 )
-
-enum class AppLanguage(
-    val displayName: String,
-    val locale: Locale
-) {
-    RU(
-        displayName = "Русский",
-        locale = Locale("ru")
-    ),
-    EN(
-        displayName = "English",
-        locale = Locale.ENGLISH
-    );
-
-    companion object {
-        fun fromDisplayName(name: String): AppLanguage? {
-            return entries.find { it.displayName == name }
-        }
-    }
-}

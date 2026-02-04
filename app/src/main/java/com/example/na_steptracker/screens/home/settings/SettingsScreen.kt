@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,15 +53,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
+import com.example.na_steptracker.domain.model.AppLanguage
+import com.example.na_steptracker.graphs.Graph
 
 @Composable
 fun SettingsScreen(navController: NavController) {
     val app = LocalContext.current.applicationContext as App
     val viewModel: SettingsViewModel = viewModel(
-        factory = SettingsViewModelFactory(app.prefsDataSource, navController)
+        factory = SettingsViewModelFactory(app.stepsRepository, navController)
     )
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                SettingsSideEffect.NavigateToAuth -> {
+                    navController.navigate(Graph.AUTH) {
+                        popUpTo(0)
+                    }
+                }
+            }
+        }
+    }
     Content(
         items = SettingsProvider.provide(
             state = state,
@@ -108,7 +122,7 @@ data class SettingSample(
 
 object SettingsProvider {
 
-    fun provide (
+    fun provide(
         state: SettingsUiState,
         onEvent: (SettingsUiEvent) -> Unit
     ): List<SettingSample> = listOf(
@@ -128,7 +142,7 @@ object SettingsProvider {
             icon = Icons.Default.Language,
             dropDown = {
                 SettingsDropDown(
-                    items = AppLanguage.entries.map { it.displayName},
+                    items = AppLanguage.entries.map { it.displayName },
                     selectedItem = state.settings.selectedLanguage.displayName,
                     onItemSelected = { selectedName ->
                         val language = AppLanguage.fromDisplayName(selectedName)
@@ -185,7 +199,7 @@ fun ProfileSetting(
     onExit: () -> Unit,
     onNameValueChanged: (String) -> Unit,
     onSurnameValueChanged: (String) -> Unit,
-    ) {
+) {
     var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -265,7 +279,7 @@ fun ProfileSetting(
     if (showDialog) {
         ProfileDialog(
             profileModel = profileModel,
-            onDismiss = {showDialog = false},
+            onDismiss = { showDialog = false },
             onExit = { onExit() },
             onNameValueChanged = { onNameValueChanged(it) },
             onSurnameValueChanged = { onSurnameValueChanged(it) },
@@ -353,7 +367,7 @@ fun ProfileDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = profileModel.name,
-                    onValueChange = {onNameValueChanged(it)},
+                    onValueChange = { onNameValueChanged(it) },
                     label = { Text(stringResource(R.string.settings_profile_dialog_name)) },
                     shape = RoundedCornerShape(16.dp),
                     singleLine = true,

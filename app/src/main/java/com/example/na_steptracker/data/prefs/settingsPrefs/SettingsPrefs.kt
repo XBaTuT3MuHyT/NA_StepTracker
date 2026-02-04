@@ -1,6 +1,5 @@
 package com.example.na_steptracker.data.prefs.settingsPrefs
 
-import com.example.na_steptracker.screens.home.settings.AppLanguage
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsPrefs {

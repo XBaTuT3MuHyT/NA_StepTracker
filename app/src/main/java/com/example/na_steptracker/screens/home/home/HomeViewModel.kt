@@ -18,11 +18,9 @@ class HomeViewModel(
 
     private val today = LocalDate.now()
 
-    private val dailyGoalFlow = flowOf(10_000)
-
     val dailyModel: StateFlow<DailyUiModel> = combine(
         stepsRepository.observeStepsForDate(today),
-        dailyGoalFlow,
+        stepsRepository.observeGoal(),
     ) { steps, goal ->
         DailyUiModel(
             current = steps.steps, target = goal, progress = steps.steps / goal.toFloat()
@@ -37,7 +35,7 @@ class HomeViewModel(
 
     val weeklyModel: StateFlow<WeeklyModel> = combine(
         stepsRepository.observeStepsForPeriod(today.minusDays(6), today),
-        dailyGoalFlow,
+        stepsRepository.observeGoal(),
     ) { days, goal ->
 
         val averageSteps = days.map { it.steps }.average().toInt()

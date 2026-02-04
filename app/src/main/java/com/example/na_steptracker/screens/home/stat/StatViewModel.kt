@@ -23,11 +23,9 @@ class StatViewModel(repository: StepsRepository): ViewModel() {
 
     private val firstDay = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-    private val targetFlow = flowOf(10_000)
-
     val weeklyChartModel: StateFlow <WeeklyChartModel> = combine(
         repository.observeStepsForPeriod(firstDay, firstDay.plusDays(6)),
-        targetFlow,
+        repository.observeGoal(),
     ){ days, target ->
         val days = days.map { day ->
             ChartPoint(

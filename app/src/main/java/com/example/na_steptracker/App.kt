@@ -2,11 +2,14 @@ package com.example.na_steptracker
 
 import android.app.Application
 import com.example.na_steptracker.data.db.DataBase
-import com.example.na_steptracker.data.prefs.PrefsDataSourceImpl
-import com.example.na_steptracker.data.prefs.PrefsImpl
+import com.example.na_steptracker.data.prefs.settingsPrefs.SettingsPrefsImpl
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsDisplayPrefs
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefsImpl
 import com.example.na_steptracker.data.steps.daily.StepsDataSourceImpl
 import com.example.na_steptracker.data.steps.StepsRepositoryImpl
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSourceImpl
+import kotlin.getValue
 
 class App: Application() {
 
@@ -30,16 +33,16 @@ class App: Application() {
         HourlyStepsDataSourceImpl(hourlyStepsDao)
     }
 
-    val prefs by lazy {
-        PrefsImpl(applicationContext)
-    }
+    private val settingsPrefsImpl by lazy { SettingsPrefsImpl(this) }
 
-    val prefsDataSource by lazy {
-        PrefsDataSourceImpl(prefs)
-    }
+    private val stepsPrefsImpl by lazy { StepsPrefsImpl(this) }
+
+    val stepDisplayPrefs: StepsDisplayPrefs get() = stepsPrefsImpl
+
+    val stepCounterStorage: StepsPrefs get() = stepsPrefsImpl
 
     val stepsRepository by lazy {
-        StepsRepositoryImpl(stepsDataSource, hourlyStepsDataSource, prefsDataSource)
+        StepsRepositoryImpl(stepsDataSource, hourlyStepsDataSource, stepDisplayPrefs, settingsPrefsImpl)
     }
 
 }
