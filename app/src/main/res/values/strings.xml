@@ -46,5 +46,6 @@
 
     <!-- Домашний -->
     <string name="home_steps">Шагов</string>
+    <string name="settings_profile_dialog_button_apply">Сохранить</string>
 
 </resources>

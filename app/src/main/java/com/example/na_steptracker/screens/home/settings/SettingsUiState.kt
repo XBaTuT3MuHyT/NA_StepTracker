@@ -13,6 +13,7 @@ data class ProfileModel(
     val name: String = "Имя",
     val surname: String = "Фамилия",
     val isDirty: Boolean = false,
+    val showDialog: Boolean = false,
 )
 
 data class SettingsModel(

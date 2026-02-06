@@ -8,4 +8,7 @@ sealed interface SettingsUiEvent {
     data class OnNameValueChanged(val content: String): SettingsUiEvent
     data class OnSurnameValueChanged(val content: String): SettingsUiEvent
     object OnClickExit: SettingsUiEvent
+    object OnApply: SettingsUiEvent
+    object OnDismiss: SettingsUiEvent
+    object OnClickProfile: SettingsUiEvent
 }

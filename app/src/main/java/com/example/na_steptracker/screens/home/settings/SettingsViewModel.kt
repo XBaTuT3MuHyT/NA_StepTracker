@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.AppLanguage
 import com.example.na_steptracker.domain.model.Profile
-import com.example.na_steptracker.graphs.Graph
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +25,8 @@ class SettingsViewModel(
     private val _effect = Channel<SettingsSideEffect>()
     val effect = _effect.receiveAsFlow()
 
+    private var lastSavedProfile: Profile? = null
+
     init {
         viewModelScope.launch {
             combine(
@@ -39,6 +40,8 @@ class SettingsViewModel(
     }
 
     private fun updateState(goal: Int, language: String, profile: Profile) {
+        lastSavedProfile = profile
+
         _state.update { currentState ->
             currentState.copy(
                 isLoading = false,
@@ -66,11 +69,48 @@ class SettingsViewModel(
             SettingsUiEvent.OnClickExit -> onClickExit()
             is SettingsUiEvent.OnNameValueChanged -> onNameValueChanged(event.content)
             is SettingsUiEvent.OnSurnameValueChanged -> onSurnameValueChanged(event.content)
+            SettingsUiEvent.OnApply -> onClickApply()
+            SettingsUiEvent.OnDismiss -> onDismiss()
+            SettingsUiEvent.OnClickProfile -> onClickProfile()
+        }
+    }
+
+    private fun onClickProfile() {
+        _state.update { it.copy(profile = it.profile.copy(showDialog = true)) }
+    }
+
+    private fun onDismiss() {
+        _state.update { currentState ->
+            val restoredProfile = lastSavedProfile?.let { saved ->
+                ProfileModel(
+                    name = saved.name,
+                    surname = saved.surname,
+                    isDirty = false,
+                    showDialog = false,
+                )
+            } ?: currentState.profile.copy(isDirty = false, showDialog = false)
+
+            currentState.copy(profile = restoredProfile)
+        }
+    }
+
+    private fun onClickApply() {
+        _state.update { it.copy(profile = it.profile.copy(isDirty = false, showDialog = false)) }
+        viewModelScope.launch {
+            try {
+                stepsRepository.saveProfile(
+                    Profile(
+                        name = _state.value.profile.name,
+                        surname = _state.value.profile.surname,
+                    )
+                )
+            } catch (e: Exception) {
+            }
         }
     }
 
     private fun onSurnameValueChanged(content: String) {
-        _state.update { it.copy(profile = it.profile.copy(surname = content)) }
+        _state.update { it.copy(profile = it.profile.copy(surname = content, isDirty = true)) }
     }
 
     private fun onClickExit() {
@@ -90,7 +130,7 @@ class SettingsViewModel(
     }
 
     private fun onNameValueChanged(content: String) {
-        _state.update { it.copy(profile = it.profile.copy(name = content)) }
+        _state.update { it.copy(profile = it.profile.copy(name = content, isDirty = true)) }
     }
 
     private fun onGoalSelected(goal: Int) {

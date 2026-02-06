@@ -1,5 +1,7 @@
 package com.example.na_steptracker.screens.home.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,7 +104,10 @@ fun Content(
                 profileModel = state.profile,
                 onExit = { onEvent(SettingsUiEvent.OnClickExit) },
                 onNameValueChanged = { onEvent(SettingsUiEvent.OnNameValueChanged(it)) },
-                onSurnameValueChanged = { onEvent(SettingsUiEvent.OnSurnameValueChanged(it)) }
+                onSurnameValueChanged = { onEvent(SettingsUiEvent.OnSurnameValueChanged(it))},
+                onApply = { onEvent(SettingsUiEvent.OnApply)},
+                onDismiss = {onEvent(SettingsUiEvent.OnDismiss)},
+                onClickProfile = { onEvent(SettingsUiEvent.OnClickProfile)}
             )
         }
 
@@ -199,14 +204,14 @@ fun ProfileSetting(
     onExit: () -> Unit,
     onNameValueChanged: (String) -> Unit,
     onSurnameValueChanged: (String) -> Unit,
+    onApply: () -> Unit,
+    onDismiss: () -> Unit,
+    onClickProfile: () -> Unit,
 ) {
-    var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .height(160.dp),
-        onClick = {
-            showDialog = true
-        },
+        onClick = {onClickProfile()},
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
@@ -276,13 +281,14 @@ fun ProfileSetting(
             }
         }
     }
-    if (showDialog) {
+    if (profileModel.showDialog) {
         ProfileDialog(
             profileModel = profileModel,
-            onDismiss = { showDialog = false },
+            onDismiss = { onDismiss() },
             onExit = { onExit() },
             onNameValueChanged = { onNameValueChanged(it) },
             onSurnameValueChanged = { onSurnameValueChanged(it) },
+            onApply = { onApply()}
         )
     }
 }
@@ -339,6 +345,7 @@ fun ProfileDialog(
     onExit: () -> Unit,
     onNameValueChanged: (String) -> Unit,
     onSurnameValueChanged: (String) -> Unit,
+    onApply: () -> Unit,
 ) {
 
     Dialog(
@@ -391,12 +398,22 @@ fun ProfileDialog(
                 ) {
                     Text(stringResource(R.string.settings_profile_dialog_button_exit_profile))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(R.string.settings_profile_dialog_button_close))
+                }
+                if (profileModel.isDirty){
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        onClick = onApply,
+                    ) {
+                        Text(stringResource(R.string.settings_profile_dialog_button_apply))
+                    }
                 }
             }
         }
