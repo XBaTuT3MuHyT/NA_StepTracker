@@ -70,4 +70,11 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
+    implementation(libs.retrofit2.converter.scalars)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 }

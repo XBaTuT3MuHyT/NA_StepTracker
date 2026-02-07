@@ -52,7 +52,7 @@ fun HomeScreen() {
     val app = LocalContext.current.applicationContext as App
 
     val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(app.stepsRepository)
+        factory = HomeViewModelFactory(app.stepsRepository, app.weatherRepository)
     )
 
     val dailyModel by viewModel.dailyModel.collectAsState()
@@ -123,7 +123,7 @@ fun DailyStat(dailyModel: DailyUiModel) {
                     )
                 }
                 Icon(
-                    imageVector = Icons.Default.WbSunny,
+                    imageVector = dailyModel.weather.icon,
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)
@@ -219,23 +219,22 @@ fun ProgressWithCenterDot(progress: Float) {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    NA_StepTrackerTheme {
-        DailyStat(
-            DailyUiModel(7000, 10000, 0.7f)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WeaklyStatPreview() {
-    NA_StepTrackerTheme {
-        WeaklyStat(
-            WeeklyModel(1234, emptyList())
-        )
-    }
-}
-
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    NA_StepTrackerTheme {
+//        DailyStat(
+//            DailyUiModel(7000, 10000, 0.7f)
+//        )
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun WeaklyStatPreview() {
+//    NA_StepTrackerTheme {
+//        WeaklyStat(
+//            WeeklyModel(1234, emptyList())
+//        )
+//    }
+//}

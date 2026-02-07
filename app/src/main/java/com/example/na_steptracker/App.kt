@@ -9,6 +9,10 @@ import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefsImpl
 import com.example.na_steptracker.data.steps.daily.StepsDataSourceImpl
 import com.example.na_steptracker.data.steps.StepsRepositoryImpl
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSourceImpl
+import com.example.na_steptracker.data.weather.RetrofitInstance
+import com.example.na_steptracker.data.weather.WeatherApiService
+import com.example.na_steptracker.data.weather.WeatherDataSourceImpl
+import com.example.na_steptracker.data.weather.WeatherRepositoryImpl
 import kotlin.getValue
 
 class App: Application() {
@@ -43,6 +47,18 @@ class App: Application() {
 
     val stepsRepository by lazy {
         StepsRepositoryImpl(stepsDataSource, hourlyStepsDataSource, stepDisplayPrefs, settingsPrefsImpl)
+    }
+
+    val weatherApi by lazy {
+        RetrofitInstance.weatherApiService
+    }
+
+    val weatherRemoteDataSource by lazy {
+        WeatherDataSourceImpl(weatherApi)
+    }
+
+    val weatherRepository by lazy {
+        WeatherRepositoryImpl(weatherRemoteDataSource)
     }
 
 }
