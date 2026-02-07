@@ -5,7 +5,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SignalWifiConnectedNoInternet4
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.na_steptracker.data.weather.WeatherResponse
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
 import com.example.na_steptracker.domain.model.Weather
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -29,7 +27,7 @@ class HomeViewModel(
     private val today = LocalDate.now()
     private var DEFAULT_ICON =Icons.Filled.SignalWifiConnectedNoInternet4
 
-    private val _weather = MutableStateFlow<Weather>(Weather(0.0, DEFAULT_ICON))
+    private val _weather = MutableStateFlow<Weather>(Weather(0.0,0, DEFAULT_ICON))
     val weather = _weather.asStateFlow()
 
     init {
@@ -50,7 +48,7 @@ class HomeViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = DailyUiModel(
-            0, 0, 0f, Weather(0.0, DEFAULT_ICON)
+            0, 0, 0f, Weather(0.0, 0, DEFAULT_ICON)
         )
     )
 

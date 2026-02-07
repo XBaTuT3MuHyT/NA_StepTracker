@@ -1,4 +1,4 @@
-package com.example.na_steptracker.data.weather
+package com.example.na_steptracker.data.weather.remote
 
 class WeatherDataSourceImpl(
     private val api: WeatherApiService,
@@ -8,5 +8,12 @@ class WeatherDataSourceImpl(
         lon: Double
     ): WeatherResponse {
         return api.getCurrentWeather(lat, lon)
+    }
+
+    override suspend fun getYesterdayWeather(
+        lat: Double,
+        lon: Double
+    ): YesterdayWeatherResponse {
+        return api.getYesterdayWeather(lat, lon)
     }
 }

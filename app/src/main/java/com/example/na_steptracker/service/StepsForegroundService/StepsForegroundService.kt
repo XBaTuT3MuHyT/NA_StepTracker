@@ -59,10 +59,12 @@ class StepsForegroundService : Service(), SensorEventListener {
 
         val app = application as App
         val stepsRepository = app.stepsRepository
+        val weatherRepository = app.weatherRepository
         val prefs = app.stepCounterStorage
 
         stepsCollector = StepsCollector(
             stepsRepository = stepsRepository,
+            weatherRepository = weatherRepository,
             stepsPrefs = prefs,
             scope = serviceScope
         )

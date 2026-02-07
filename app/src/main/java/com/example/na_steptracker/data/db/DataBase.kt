@@ -9,18 +9,22 @@ import com.example.na_steptracker.data.steps.daily.Day
 import com.example.na_steptracker.data.steps.daily.StepsDao
 import com.example.na_steptracker.data.steps.hourly.HourlySteps
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDao
+import com.example.na_steptracker.data.weather.local.WeatherDao
+import com.example.na_steptracker.data.weather.local.WeatherEntity
 
 @TypeConverters(LocalDateConverter::class)
 @Database(
     entities = [
         Day::class,
-        HourlySteps::class
-    ], version = 2
+        HourlySteps::class,
+        WeatherEntity::class
+    ], version = 4
 )
 abstract class DataBase : RoomDatabase() {
 
     abstract fun stepsDao(): StepsDao
     abstract fun hourlyStepsDao(): HourlyStepsDao
+    abstract fun weatherDao(): WeatherDao
 
     companion object {
         @Volatile

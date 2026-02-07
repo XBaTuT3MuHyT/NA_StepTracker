@@ -49,7 +49,7 @@ fun StatScreen() {
     val app = LocalContext.current.applicationContext as App
 
     val viewModel: StatViewModel = viewModel(
-        factory = StatViewModelFactory(app.stepsRepository)
+        factory = StatViewModelFactory(app.stepsRepository, app.weatherRepository)
     )
 
     val weeklyChartModel by viewModel.weeklyChartModel.collectAsState()

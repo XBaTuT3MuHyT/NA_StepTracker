@@ -3,12 +3,15 @@ package com.example.na_steptracker.service.StepsForegroundService
 import android.util.Log
 import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
 import com.example.na_steptracker.domain.StepsRepository
+import com.example.na_steptracker.domain.WeatherRepository
+import com.example.na_steptracker.domain.model.Weather
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -22,6 +25,7 @@ data class StepsState(
 
 class StepsCollector(
     private val stepsRepository: StepsRepository,
+    private val weatherRepository: WeatherRepository,
     private val stepsPrefs: StepsPrefs,
     private val scope: CoroutineScope
 ) {
@@ -87,20 +91,7 @@ class StepsCollector(
         }
 
         if (today != s.lastDate) {
-            scope.launch {
-                stepsRepository.saveDay(
-                    date = s.lastDate,
-                    steps = s.daySteps
-                )
-
-                stepsRepository.deleteAllHours()
-
-                stepsPrefs.saveDay(
-                    lastSensorValue = newValue,
-                    lastSavedDate = today,
-                    currentDateSteps = 0
-                )
-            }
+            saveDay(s, lastSensorValue = last, lastSavedDate = today)
         }
 
         val currentHourSteps = s.hourSteps + delta
@@ -121,6 +112,34 @@ class StepsCollector(
                 currentDateSteps = currentDateSteps,
                 currentHourSteps = currentHourSteps,
             )
+        }
+    }
+
+    private fun saveDay(
+        s: StepsState,
+        lastSensorValue: Int,
+        lastSavedDate: LocalDate
+        ) {
+        scope.launch {
+            stepsRepository.saveDay(
+                date = s.lastDate,
+                steps = s.daySteps
+            )
+
+            stepsRepository.deleteAllHours()
+
+            stepsPrefs.saveDay(
+                lastSensorValue = lastSensorValue,
+                lastSavedDate = lastSavedDate,
+                currentDateSteps = 0
+            )
+            runCatching {
+                val weatherCode = weatherRepository.fetchYesterdayWeather(59.53, 29.54)
+                weatherRepository.insertWeather(
+                    weatherCode = weatherCode,
+                    date = s.lastDate
+                )
+            }
         }
     }
 }

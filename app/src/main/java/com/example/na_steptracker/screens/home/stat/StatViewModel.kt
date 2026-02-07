@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.na_steptracker.components.RecordCardModel
 import com.example.na_steptracker.domain.StepsRepository
+import com.example.na_steptracker.domain.WeatherRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -17,16 +20,19 @@ import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
-class StatViewModel(repository: StepsRepository): ViewModel() {
+class StatViewModel(
+    private val repository: StepsRepository,
+    private val weatherRepository: WeatherRepository,
+) : ViewModel() {
 
     private val today = LocalDate.now()
 
     private val firstDay = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-    val weeklyChartModel: StateFlow <WeeklyChartModel> = combine(
+    val weeklyChartModel: StateFlow<WeeklyChartModel> = combine(
         repository.observeStepsForPeriod(firstDay, firstDay.plusDays(6)),
         repository.observeGoal(),
-    ){ days, target ->
+    ) { days, target ->
         val days = days.map { day ->
             ChartPoint(
                 label = day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
@@ -36,7 +42,7 @@ class StatViewModel(repository: StepsRepository): ViewModel() {
         WeeklyChartModel(
             target = target,
             days
-            )
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -53,7 +59,7 @@ class StatViewModel(repository: StepsRepository): ViewModel() {
         }
     }
 
-    val dailyChartModel: StateFlow <DailyChartModel> =
+    val dailyChartModel: StateFlow<DailyChartModel> =
         repository.observeHourlySteps()
             .map { list ->
                 val hours = list.map { hour ->
@@ -74,25 +80,28 @@ class StatViewModel(repository: StepsRepository): ViewModel() {
                 )
             )
 
-    val records: StateFlow <RecordsModel> =
-        repository.observeRecordSteps()
-            .map { list ->
-                val records = list.mapIndexed { index, day ->
-                    RecordCardModel(
-                        index = index,
-                        weather = RecordCardModel.mock.weather,
-                        steps = day.steps,
-                        date = day.date,
-                    )
-                }
-                RecordsModel(
-                    records = records
-                )
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = RecordsModel(emptyList())
-            )
+    val records: StateFlow<RecordsModel> = repository.observeRecordSteps()
+        .flatMapLatest { list ->
+            val recordFlows = list.mapIndexed { index, day ->
+                weatherRepository.observeWeatherForDate(day.date)
+                    .map { weatherEntity ->
+                        RecordCardModel(
+                            index = index,
+                            weather = weatherEntity?.let {
+                                weatherEntity.icon
+                            } ?: RecordCardModel.mock.weather,
+                            steps = day.steps,
+                            date = day.date,
+                        )
+                    }
+            }
+            combine(recordFlows) { recordArray ->
+                RecordsModel(records = recordArray.toList())
+            }
 
-
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = RecordsModel(emptyList())
+        )
 }

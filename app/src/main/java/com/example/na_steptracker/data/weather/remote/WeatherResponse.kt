@@ -1,4 +1,4 @@
-package com.example.na_steptracker.data.weather
+package com.example.na_steptracker.data.weather.remote
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
