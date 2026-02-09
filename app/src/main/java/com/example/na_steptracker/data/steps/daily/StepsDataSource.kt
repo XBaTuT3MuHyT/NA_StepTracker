@@ -19,4 +19,6 @@ interface StepsDataSource {
     ): Flow<List<Day>>
 
     fun observeRecordSteps(): Flow<List<Day>>
+
+    fun observeRecordsWithWeather(): Flow<List<DayWithWeather>>
 }
