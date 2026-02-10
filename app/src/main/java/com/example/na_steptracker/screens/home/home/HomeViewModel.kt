@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
 import com.example.na_steptracker.domain.model.Weather
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +19,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val stepsRepository: StepsRepository,
     private val weatherRepository: WeatherRepository,
 ) : ViewModel() {

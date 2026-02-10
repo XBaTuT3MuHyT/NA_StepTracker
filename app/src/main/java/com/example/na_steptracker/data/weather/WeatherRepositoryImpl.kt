@@ -20,9 +20,11 @@ import com.example.na_steptracker.domain.model.Weather
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class WeatherRepositoryImpl(
+@Singleton
+class WeatherRepositoryImpl @Inject constructor(
     private val remoteSource: WeatherDataSource,
     private val localSource: LocalWeatherDataSource
 ) : WeatherRepository {

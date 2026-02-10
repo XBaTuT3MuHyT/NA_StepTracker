@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
@@ -46,11 +47,8 @@ import com.example.na_steptracker.components.RecordCardModel
 
 @Composable
 fun StatScreen() {
-    val app = LocalContext.current.applicationContext as App
 
-    val viewModel: StatViewModel = viewModel(
-        factory = StatViewModelFactory(app.stepsRepository, app.weatherRepository)
-    )
+    val viewModel: StatViewModel = hiltViewModel()
 
     val weeklyChartModel by viewModel.weeklyChartModel.collectAsState()
     val dailyChartModel by viewModel.dailyChartModel.collectAsState()

@@ -37,10 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.na_steptracker.App
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.na_steptracker.R
-import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import kotlin.random.Random
@@ -49,16 +47,16 @@ import kotlin.random.nextInt
 
 @Composable
 fun HomeScreen() {
-    val app = LocalContext.current.applicationContext as App
 
-    val viewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(app.stepsRepository, app.weatherRepository)
-    )
+    val viewModel: HomeViewModel = hiltViewModel()
 
     val dailyModel by viewModel.dailyModel.collectAsState()
     val weeklyModel by viewModel.weeklyModel.collectAsState()
 
-    Content(dailyModel, weeklyModel)
+    Content(
+        dailyModel,
+        weeklyModel,
+    )
 }
 
 data class Day(val steps: Int, val dayOfTheWeek: DayOfWeek)

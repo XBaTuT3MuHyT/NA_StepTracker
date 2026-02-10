@@ -15,17 +15,26 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.na_steptracker.App
 import com.example.na_steptracker.R
+import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
+import com.example.na_steptracker.domain.StepsRepository
+import com.example.na_steptracker.domain.WeatherRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class StepsForegroundService : Service(), SensorEventListener {
     companion object {
         private const val NOTIFICATION_ID = 1
     }
-    private lateinit var stepsCollector: StepsCollector
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private lateinit var sensorManager: SensorManager
+
+    @Inject lateinit var stepsRepository: StepsRepository
+    @Inject lateinit var weatherRepository: WeatherRepository
+    @Inject lateinit var stepsPrefs: StepsPrefs
+    @Inject lateinit var sensorManager: SensorManager
+    @Inject lateinit var stepsCollector: StepsCollector
     private var stepsSensor: Sensor? = null
 
     private fun createNotification(): Notification {
@@ -53,21 +62,8 @@ class StepsForegroundService : Service(), SensorEventListener {
 
         Log.d("StepsService", "Service CREATED")
 
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepsSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
-
-        val app = application as App
-        val stepsRepository = app.stepsRepository
-        val weatherRepository = app.weatherRepository
-        val prefs = app.stepCounterStorage
-
-        stepsCollector = StepsCollector(
-            stepsRepository = stepsRepository,
-            weatherRepository = weatherRepository,
-            stepsPrefs = prefs,
-            scope = serviceScope
-        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

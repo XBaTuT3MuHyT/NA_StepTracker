@@ -26,22 +26,4 @@ abstract class DataBase : RoomDatabase() {
     abstract fun hourlyStepsDao(): HourlyStepsDao
     abstract fun weatherDao(): WeatherDao
 
-    companion object {
-        @Volatile
-        private var INSTANCE: DataBase? = null
-
-        fun getInstance(context: Context): DataBase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    DataBase::class.java,
-                    "database",
-                )
-                    .fallbackToDestructiveMigration(true)
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
 }

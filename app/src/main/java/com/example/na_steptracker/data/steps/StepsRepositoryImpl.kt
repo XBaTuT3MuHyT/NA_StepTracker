@@ -18,22 +18,25 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class StepsRepositoryImpl(
-    val stepsSource: StepsDataSource,
-    val hourlyStepsSource: HourlyStepsDataSource,
-    val stepsDisplayPrefs: StepsDisplayPrefs,
-    val settingsPrefs: SettingsPrefs,
+@Singleton
+class StepsRepositoryImpl @Inject constructor(
+    private val stepsSource: StepsDataSource,
+    private val hourlyStepsSource: HourlyStepsDataSource,
+    private val stepsDisplayPrefs: StepsDisplayPrefs,
+    private val settingsPrefs: SettingsPrefs,
 ) : StepsRepository {
 
-    fun currentHourFlow(): Flow<Int> = flow {
+    private fun currentHourFlow(): Flow<Int> = flow {
         while (true) {
             emit(LocalDateTime.now().hour)
             delay(1_000)
         }
     }.distinctUntilChanged()
 
-    fun currentDateFlow(): Flow<LocalDate> = flow {
+    private fun currentDateFlow(): Flow<LocalDate> = flow {
         while (true) {
             emit(LocalDate.now())
             delay(1_000)
@@ -145,7 +148,7 @@ class StepsRepositoryImpl(
         return combine(
             settingsPrefs.surname,
             settingsPrefs.name
-        ) {sur, name ->
+        ) { sur, name ->
             Profile(
                 name = name,
                 surname = sur,

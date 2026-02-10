@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.na_steptracker.App
@@ -60,10 +61,7 @@ import com.example.na_steptracker.graphs.Graph
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    val app = LocalContext.current.applicationContext as App
-    val viewModel: SettingsViewModel = viewModel(
-        factory = SettingsViewModelFactory(app.stepsRepository, navController)
-    )
+    val viewModel: SettingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {

@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.AppLanguage
 import com.example.na_steptracker.domain.model.Profile
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,10 +15,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val stepsRepository: StepsRepository,
-    private val navController: NavController,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())

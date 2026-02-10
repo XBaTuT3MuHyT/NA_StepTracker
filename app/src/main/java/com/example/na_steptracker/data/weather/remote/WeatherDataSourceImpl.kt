@@ -1,6 +1,10 @@
 package com.example.na_steptracker.data.weather.remote
 
-class WeatherDataSourceImpl(
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class WeatherDataSourceImpl @Inject constructor(
     private val api: WeatherApiService,
 ) : WeatherDataSource {
     override suspend fun getCurrentWeather(

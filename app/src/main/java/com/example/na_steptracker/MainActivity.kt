@@ -28,8 +28,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.na_steptracker.service.StepsForegroundService.StepsForegroundService
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

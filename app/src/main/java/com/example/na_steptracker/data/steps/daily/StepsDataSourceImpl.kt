@@ -2,8 +2,11 @@ package com.example.na_steptracker.data.steps.daily
 
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class StepsDataSourceImpl(
+@Singleton
+class StepsDataSourceImpl @Inject constructor(
     private val stepsDao: StepsDao
 ) : StepsDataSource {
 

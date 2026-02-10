@@ -2,6 +2,7 @@ package com.example.na_steptracker.service.StepsForegroundService
 
 import android.util.Log
 import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
+import com.example.na_steptracker.di.ApplicationScope
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
 import com.example.na_steptracker.domain.model.Weather
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 data class StepsState(
     val lastSensor: Int?,
@@ -23,11 +25,11 @@ data class StepsState(
     val hourSteps: Int
 )
 
-class StepsCollector(
+class StepsCollector @Inject constructor(
     private val stepsRepository: StepsRepository,
     private val weatherRepository: WeatherRepository,
     private val stepsPrefs: StepsPrefs,
-    private val scope: CoroutineScope
+    @ApplicationScope private val scope: CoroutineScope
 ) {
     private var state: StateFlow<StepsState> = combine(
         stepsPrefs.lastSensorValue,

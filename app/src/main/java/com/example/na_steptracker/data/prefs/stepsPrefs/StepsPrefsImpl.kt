@@ -1,23 +1,21 @@
 package com.example.na_steptracker.data.prefs.stepsPrefs
 
-import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class StepsPrefsImpl(
-    context: Context
+@Singleton
+class StepsPrefsImpl @Inject constructor(
+    private val dataStore: DataStore<Preferences>
 ): StepsDisplayPrefs, StepsPrefs {
-
-    val Context.stepsDataStore by preferencesDataStore(
-        name = "steps_store"
-    )
-    private val dataStore = context.stepsDataStore
 
     private object Keys {
         val LAST_SENSOR_STEPS = intPreferencesKey("last_sensor_steps")
