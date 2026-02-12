@@ -2,6 +2,7 @@ package com.example.na_steptracker.data.prefs.settingsPrefs
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,6 +21,7 @@ class SettingsPrefsImpl @Inject constructor(
         val SURNAME = stringPreferencesKey("surname")
         val GOAL = intPreferencesKey("goal")
         val LANGUAGE = stringPreferencesKey("language")
+        val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
     }
 
     override val goal: Flow<Int> =
@@ -41,6 +43,11 @@ class SettingsPrefsImpl @Inject constructor(
             preferences[Keys.SURNAME]?: ""
         }
 
+    override val isLoggedIn: Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.IS_LOGGED_IN]?: false
+        }
+
     override suspend fun saveProfile(name: String, surname: String) {
         dataStore.edit { preferences ->
             preferences[Keys.SURNAME] = surname
@@ -59,4 +66,11 @@ class SettingsPrefsImpl @Inject constructor(
             preferences[Keys.LANGUAGE] = language
         }
     }
+
+    override suspend fun saveIsLoggedIn(isLoggedIn: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.IS_LOGGED_IN] = isLoggedIn
+        }
+    }
+
 }

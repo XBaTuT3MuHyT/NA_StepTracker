@@ -8,11 +8,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 
 @Composable
-fun RootNavGraph(navController: NavHostController, innerPadding: PaddingValues) {
+fun RootNavGraph(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    startDestination: String = Graph.AUTH
+
+) {
     NavHost(
+        navController = navController,
         modifier = Modifier.padding(innerPadding),
-        startDestination = Graph.AUTH,
-        navController = navController
+        route = Graph.ROOT,
+        startDestination = startDestination,
     ) {
         authNavGraph(navController)
         homeNavGraph(navController)
@@ -23,5 +29,4 @@ object Graph {
     const val ROOT = "root_graph"
     const val AUTH = "auth_graph"
     const val HOME = "home_graph"
-
 }

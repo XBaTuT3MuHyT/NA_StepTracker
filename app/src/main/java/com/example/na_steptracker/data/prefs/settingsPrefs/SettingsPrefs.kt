@@ -7,6 +7,7 @@ interface SettingsPrefs {
     val language: Flow<String>
     val name: Flow<String>
     val surname: Flow<String>
+    val isLoggedIn: Flow<Boolean>
 
     suspend fun saveProfile(
         name: String,
@@ -20,4 +21,9 @@ interface SettingsPrefs {
     suspend fun saveLanguage(
         language: String
     )
+
+    suspend fun saveIsLoggedIn(
+        isLoggedIn: Boolean
+    )
+
 }

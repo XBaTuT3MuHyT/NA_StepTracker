@@ -2,12 +2,11 @@ package com.example.na_steptracker.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.na_steptracker.screens.auth.ForgotPasswordScreen
-import com.example.na_steptracker.screens.auth.LoginScreen
-import com.example.na_steptracker.screens.auth.SignupScreen
+import com.example.na_steptracker.screens.auth.login.LoginScreen
+import com.example.na_steptracker.screens.auth.signup.SignupScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavController) {
     navigation(

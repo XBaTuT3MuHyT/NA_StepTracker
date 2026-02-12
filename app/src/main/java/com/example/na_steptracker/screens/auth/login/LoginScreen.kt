@@ -1,4 +1,4 @@
-package com.example.na_steptracker.screens.auth
+package com.example.na_steptracker.screens.auth.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.na_steptracker.R
@@ -46,10 +49,65 @@ import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val viewModel: LoginViewModel = hiltViewModel()
 
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+
+                LoginSideEffect.NavigateToHome -> {
+                    navController.navigate(Graph.HOME) {
+                        launchSingleTop = true
+                        popUpTo(0) { inclusive = true }
+                    }
+
+                }
+
+                LoginSideEffect.NavigateToForgotPassword -> {
+                    navController.navigate("forgot"){
+                        launchSingleTop = true
+                        popUpTo("login")
+                    }
+
+                }
+
+                LoginSideEffect.NavigateToSignup -> {
+                    navController.navigate("signup"){
+                        launchSingleTop = true
+                        popUpTo("login")
+                    }
+                }
+            }
+        }
+    }
+
+    Content(
+        state = state,
+        onEmailChanged = { viewModel.onEvent(LoginUiEvent.OnEmailChanged(it)) },
+        onPasswordChanged = { viewModel.onEvent(LoginUiEvent.OnPasswordChanged(it)) },
+        onLoginClick = { viewModel.onEvent(LoginUiEvent.OnLoginClick) },
+        onSignupClick = { viewModel.onEvent(LoginUiEvent.OnSignupClick) },
+        onForgotPasswordClick = { viewModel.onEvent(LoginUiEvent.OnForgotPasswordClick) },
+        onGoogleLoginClick = {  },
+        onVisibilityChange = { viewModel.onEvent(LoginUiEvent.OnVisibilityChange) }
+    )
+
+}
+
+
+@Composable
+fun Content(
+    state: LoginUiState,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onVisibilityChange: () -> Unit,
+    onLoginClick: () -> Unit,
+    onSignupClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
+) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -73,10 +131,8 @@ fun LoginScreen(navController: NavController) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
 
-                value = email,
-                onValueChange = { newEmail ->
-                    email = newEmail
-                },
+                value = state.email,
+                onValueChange = onEmailChanged,
                 label = { Text(stringResource(R.string.login_textfield_email)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
@@ -84,30 +140,27 @@ fun LoginScreen(navController: NavController) {
             )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = { newPassword ->
-                    password = newPassword
-                },
+                value = state.password,
+                onValueChange = onPasswordChanged,
                 label = { Text(stringResource(R.string.login_textfield_password)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
-                visualTransformation = if (passwordVisible) {
+                visualTransformation = if (state.isPasswordVisible) {
                     VisualTransformation.None
                 } else {
                     PasswordVisualTransformation()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (passwordVisible) {
+                    val image = if (state.isPasswordVisible) {
                         Icons.Default.Visibility
                     } else {
                         Icons.Default.VisibilityOff
                     }
-                    val description = if (passwordVisible) "Скрыть пароль" else "Показать пароль"
                     IconButton(
-                        onClick = { passwordVisible = !passwordVisible }
+                        onClick = onVisibilityChange
                     ) {
-                        Icon(image, description)
+                        Icon(image, null)
                     }
                 }
             )
@@ -115,7 +168,10 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                ForgotPasswordClickableText(navController)
+                ClickableText(
+                    text = stringResource(R.string.clickabletext_forgot_password),
+                    onClick = onForgotPasswordClick,
+                )
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -128,12 +184,8 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                onClick = {
-                    navController.navigate(Graph.HOME) {
-                        launchSingleTop = true
-                        popUpTo(0) { inclusive = true }
-                    }
-                }) {
+                onClick = onLoginClick
+            ) {
                 Text(stringResource(R.string.login_button_login))
             }
             Text(stringResource(R.string.login_text_login_with))
@@ -141,7 +193,7 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                onClick = {}
+                onClick = onGoogleLoginClick
             ) {
                 Text(stringResource(R.string.login_button_google))
             }
@@ -152,55 +204,24 @@ fun LoginScreen(navController: NavController) {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(stringResource(R.string.login_text_no_account))
-            SignupClickableText(navController)
+            ClickableText(
+                text = stringResource(R.string.clickabletext_signup),
+                onClick = onSignupClick
+            )
         }
     }
-
 }
 
 
 @Composable
 fun ClickableText(
     text: String,
-    navController: NavController,
-    route: String
+    onClick: () -> Unit,
 ) {
     Text(
         text = text,
         color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable {
-            navController.navigate(route) {
-                launchSingleTop = true
-                popUpTo("login")
-            }
-        }
-    )
-}
-
-@Composable
-fun LoginClickableText(navController: NavController) {
-    ClickableText(
-        stringResource(R.string.clickabletext_account_exist),
-        route = "login",
-        navController = navController
-    )
-}
-
-@Composable
-fun ForgotPasswordClickableText(navController: NavController) {
-    ClickableText(
-        stringResource(R.string.clickabletext_forgot_password),
-        route = "forgot",
-        navController = navController
-    )
-}
-
-@Composable
-fun SignupClickableText(navController: NavController) {
-    ClickableText(
-        stringResource(R.string.clickabletext_signup),
-        route = "signup",
-        navController = navController
+        modifier = Modifier.clickable {onClick()},
     )
 }
 

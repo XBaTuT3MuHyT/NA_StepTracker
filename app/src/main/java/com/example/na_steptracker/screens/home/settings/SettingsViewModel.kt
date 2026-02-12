@@ -3,6 +3,7 @@ package com.example.na_steptracker.screens.home.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.na_steptracker.domain.AuthRepository
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.AppLanguage
 import com.example.na_steptracker.domain.model.Profile
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val stepsRepository: StepsRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsUiState())
@@ -117,6 +119,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun onClickExit() {
         viewModelScope.launch {
+            authRepository.changeLoggedInState(false)
             _effect.send(SettingsSideEffect.NavigateToAuth)
         }
     }

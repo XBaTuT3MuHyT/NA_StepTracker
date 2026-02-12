@@ -1,4 +1,4 @@
-package com.example.na_steptracker.screens.auth
+package com.example.na_steptracker.screens.auth.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,25 +38,76 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.na_steptracker.R
 import com.example.na_steptracker.graphs.Graph
+import com.example.na_steptracker.screens.auth.login.ClickableText
+import com.example.na_steptracker.screens.auth.login.LoginViewModel
 import com.example.na_steptracker.ui.theme.NA_StepTrackerTheme
 
 @Composable
 fun SignupScreen(navController: NavController) {
-    var name by remember { mutableStateOf("") }
-//    var surName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var repeatPassword by remember { mutableStateOf("") }
 
-    var passwordVisible by remember { mutableStateOf(false) }
-    var repeatPasswordVisible by remember { mutableStateOf(false) }
+    val viewModel: SignupViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                SignupSideEffect.NavigateToForgotPassword -> {
+                    navController.navigate("forgot") {
+                        launchSingleTop = true
+                        popUpTo("signup")
+                    }
+                }
 
+                SignupSideEffect.NavigateToHome -> {
+                    navController.navigate(Graph.HOME) {
+                        launchSingleTop = true
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+
+                SignupSideEffect.NavigateToLogin -> {
+                    navController.navigate("login") {
+                        launchSingleTop = true
+                        popUpTo("signup")
+                    }
+                }
+            }
+        }
+    }
+    Content(
+        state = state,
+        onNameChanged = { viewModel.onEvent(SignUpUiEvent.OnNameChanged(it)) },
+        onEmailChanged = { viewModel.onEvent(SignUpUiEvent.OnEmailChanged(it)) },
+        onPasswordChanged = { viewModel.onEvent(SignUpUiEvent.OnPasswordChanged(it)) },
+        onRepeatPasswordChanged = { viewModel.onEvent(SignUpUiEvent.OnRepeatPasswordChanged(it)) },
+        onVisibilityChange = { viewModel.onEvent(SignUpUiEvent.OnVisibilityChange) },
+        onVisibilityRepeatPasswordChange = { viewModel.onEvent(SignUpUiEvent.OnVisibilityRepeatPasswordChange) },
+        onSignUpClick = { viewModel.onEvent(SignUpUiEvent.OnSignUpClick) },
+        onGoogleLoginClick = { viewModel.onEvent(SignUpUiEvent.OnGoogleSignUpClick) },
+        onLoginClick = { viewModel.onEvent(SignUpUiEvent.OnLoginClick) },
+    )
+}
+
+@Composable
+fun Content(
+    state: SignupUiState,
+    onNameChanged: (String) -> Unit,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onRepeatPasswordChanged: (String) -> Unit,
+    onVisibilityChange: () -> Unit,
+    onVisibilityRepeatPasswordChange: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
+    onLoginClick: () -> Unit,
+) {
     val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,7 +118,8 @@ fun SignupScreen(navController: NavController) {
     ) {
 
         Text(
-            text = stringResource(R.string.signup_title), style = MaterialTheme.typography.headlineMedium
+            text = stringResource(R.string.signup_title),
+            style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(36.dp))
 
@@ -77,32 +131,18 @@ fun SignupScreen(navController: NavController) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
 
-                value = name,
-                onValueChange = { newName ->
-                    name = newName
-                },
+                value = state.name,
+                onValueChange = onNameChanged,
                 label = { Text(stringResource(R.string.signup_textfield_name)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
             )
-//            OutlinedTextField(
-//                modifier = Modifier.fillMaxWidth(),
-//
-//                value = surName,
-//                onValueChange = { newSurName ->
-//                    surName = newSurName
-//                },
-//                label = { Text(stringResource(R.string.signup_textfield_surname)) },
-//                shape = RoundedCornerShape(16.dp),
-//                singleLine = true,
-//            )
+
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
 
-                value = email,
-                onValueChange = { newEmail ->
-                    email = newEmail
-                },
+                value = state.email,
+                onValueChange = onEmailChanged,
                 label = { Text(stringResource(R.string.login_textfield_email)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
@@ -110,56 +150,52 @@ fun SignupScreen(navController: NavController) {
             )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = { newPassword ->
-                    password = newPassword
-                },
+                value = state.password,
+                onValueChange = onPasswordChanged,
                 label = { Text(stringResource(R.string.login_textfield_password)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
-                visualTransformation = if (passwordVisible) {
+                visualTransformation = if (state.isPasswordVisible) {
                     VisualTransformation.None
                 } else {
                     PasswordVisualTransformation()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (passwordVisible) {
+                    val image = if (state.isPasswordVisible) {
                         Icons.Default.Visibility
                     } else {
                         Icons.Default.VisibilityOff
                     }
-                    val description = if (passwordVisible) "Скрыть пароль" else "Показать пароль"
                     IconButton(
-                        onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(image, description)
+                        onClick = onVisibilityChange
+                    ) {
+                        Icon(image, null)
                     }
                 })
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = repeatPassword,
-                onValueChange = { newPassword ->
-                    repeatPassword = newPassword
-                },
+                value = state.repeatPassword,
+                onValueChange = onRepeatPasswordChanged,
                 label = { Text(stringResource(R.string.signup_textfield_repeat_password)) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
-                visualTransformation = if (repeatPasswordVisible) {
+                visualTransformation = if (state.isRepeatPasswordVisible) {
                     VisualTransformation.None
                 } else {
                     PasswordVisualTransformation()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (repeatPasswordVisible) {
+                    val image = if (state.isRepeatPasswordVisible) {
                         Icons.Default.Visibility
                     } else {
                         Icons.Default.VisibilityOff
                     }
-                    val description = if (repeatPasswordVisible) "Скрыть пароль" else "Показать пароль"
                     IconButton(
-                        onClick = { repeatPasswordVisible = !repeatPasswordVisible }) {
-                        Icon(image, description)
+                        onClick = onVisibilityRepeatPasswordChange
+                    ) {
+                        Icon(image, null)
                     }
                 })
         }
@@ -171,28 +207,30 @@ fun SignupScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                modifier = Modifier.fillMaxWidth(), onClick = {
-                    navController.navigate(Graph.HOME) {
-                        launchSingleTop = true
-                        popUpTo(0) { inclusive = true }
-                    }
-                }) {
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onSignUpClick,
+            ) {
                 Text(stringResource(R.string.signup_button_signup))
             }
             Text("Или продолжить с помощью")
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                onClick = {}) {
+                onClick = onGoogleLoginClick
+            ) {
                 Text(stringResource(R.string.login_button_google))
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
         Row(
-            modifier = Modifier.widthIn(max = 420.dp), horizontalArrangement = Arrangement.Center
+            modifier = Modifier.widthIn(max = 420.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(stringResource(R.string.signup_text_account_exist))
-            LoginClickableText(navController)
+            ClickableText(
+                text = stringResource(R.string.clickabletext_account_exist),
+                onClick = onLoginClick,
+            )
         }
     }
 }

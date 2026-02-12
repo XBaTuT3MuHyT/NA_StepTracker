@@ -2,6 +2,7 @@ package com.example.na_steptracker.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.na_steptracker.data.auth.UserDao
 import com.example.na_steptracker.data.db.DataBase
 import com.example.na_steptracker.data.steps.daily.StepsDao
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDao
@@ -27,7 +28,7 @@ object DatabaseModule {
             DataBase::class.java,
             "database"
         )
-            .fallbackToDestructiveMigration()
+            .addMigrations(DataBase.MIGRATION_4_5)
             .build()
     }
 
@@ -45,6 +46,14 @@ object DatabaseModule {
         database: DataBase
     ): HourlyStepsDao {
         return database.hourlyStepsDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(
+        database: DataBase
+    ): UserDao {
+        return database.userDao()
     }
 
     @Provides
