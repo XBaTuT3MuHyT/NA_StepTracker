@@ -3,16 +3,15 @@ package com.example.na_steptracker.service.StepsForegroundService
 import android.util.Log
 import com.example.na_steptracker.data.prefs.stepsPrefs.StepsPrefs
 import com.example.na_steptracker.di.ApplicationScope
+import com.example.na_steptracker.domain.AuthRepository
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
-import com.example.na_steptracker.domain.model.Weather
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -28,6 +27,7 @@ data class StepsState(
 class StepsCollector @Inject constructor(
     private val stepsRepository: StepsRepository,
     private val weatherRepository: WeatherRepository,
+    private val authRepository: AuthRepository,
     private val stepsPrefs: StepsPrefs,
     @ApplicationScope private val scope: CoroutineScope
 ) {
@@ -56,6 +56,14 @@ class StepsCollector @Inject constructor(
             hourSteps = 0
         )
     )
+    private val currentUserId = authRepository.currentUserId
+        .stateIn(
+            scope,
+            SharingStarted.Eagerly,
+            null
+        )
+
+
 
     fun onNewSensorValue(newValue: Int) {
         val s = state.value
@@ -93,7 +101,11 @@ class StepsCollector @Inject constructor(
         }
 
         if (today != s.lastDate) {
-            saveDay(s, lastSensorValue = last, lastSavedDate = today)
+            if (currentUserId.value == null) {
+                Log.d("StepsService", "не удалось сохранить день userId ${currentUserId.value}")
+                return
+            }
+            saveDay(s, lastSensorValue = last, lastSavedDate = today, currentUserId.value!!)
         }
 
         val currentHourSteps = s.hourSteps + delta
@@ -120,12 +132,14 @@ class StepsCollector @Inject constructor(
     private fun saveDay(
         s: StepsState,
         lastSensorValue: Int,
-        lastSavedDate: LocalDate
+        lastSavedDate: LocalDate,
+        currentUserId: Int
         ) {
         scope.launch {
             stepsRepository.saveDay(
                 date = s.lastDate,
-                steps = s.daySteps
+                steps = s.daySteps,
+                ownerId = currentUserId,
             )
 
             stepsRepository.deleteAllHours()

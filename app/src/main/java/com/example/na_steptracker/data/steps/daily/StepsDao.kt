@@ -12,24 +12,28 @@ import java.time.LocalDate
 @Dao
 interface StepsDao {
 
-    @Query("SELECT * FROM days WHERE date = :date")
-    fun observeStepsForDate(date: LocalDate): Flow<Day?>
+    @Query("SELECT * FROM days WHERE date = :date AND ownerId = :ownerId")
+    fun observeStepsForDate(
+        date: LocalDate,
+        ownerId: Int,
+    ): Flow<Day?>
 
-    @Query("SELECT * FROM days WHERE date BETWEEN :from AND :to")
+    @Query("SELECT * FROM days WHERE ownerId = :ownerId AND date BETWEEN :from AND :to")
     fun observeStepsForPeriod(
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        ownerId: Int,
     ): Flow<List<Day>>
 
     @Transaction
-    @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
-    fun observeRecordDaysWithWeather(): Flow<List<DayWithWeatherEntity>>
+    @Query("SELECT * FROM days WHERE ownerId = :ownerId ORDER BY steps DESC LIMIT 15")
+    fun observeRecordDaysWithWeather(ownerId: Int): Flow<List<DayWithWeatherEntity>>
 
-    @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
-    fun observeRecordSteps(): Flow<List<Day>>
+    @Query("SELECT * FROM days WHERE ownerId = :ownerId ORDER BY steps DESC LIMIT 15")
+    fun observeRecordSteps(ownerId: Int): Flow<List<Day>>
 
-    @Query("SELECT * FROM days")
-    fun observeAllSteps(): Flow<List<Day>>
+    @Query("SELECT * FROM days WHERE ownerId = :ownerId")
+    fun observeAllSteps(ownerId: Int): Flow<List<Day>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSteps(day: Day)

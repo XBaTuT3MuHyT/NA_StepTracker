@@ -45,7 +45,8 @@ class StepsRepositoryImpl @Inject constructor(
     }.distinctUntilChanged()
 
     override fun observeStepsForDate(
-        date: LocalDate
+        date: LocalDate,
+        ownerId: Int,
     ): Flow<DaySteps> {
         return if (date == LocalDate.now()) {
             stepsDisplayPrefs.currentDateSteps
@@ -56,7 +57,7 @@ class StepsRepositoryImpl @Inject constructor(
                     )
                 }
         } else {
-            stepsSource.observeStepsForDate(date)
+            stepsSource.observeStepsForDate(date, ownerId)
                 .map { day ->
                     DaySteps(
                         date = date,
@@ -68,11 +69,12 @@ class StepsRepositoryImpl @Inject constructor(
 
     override fun observeStepsForPeriod(
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        ownerId: Int,
     ): Flow<List<DaySteps>> {
 
         return combine(
-            stepsSource.observeStepsForPeriod(from, to),
+            stepsSource.observeStepsForPeriod(from, to, ownerId),
             stepsDisplayPrefs.currentDateSteps,
             currentDateFlow(),
         ) { dbDays, todaySteps, today ->
@@ -133,8 +135,10 @@ class StepsRepositoryImpl @Inject constructor(
 
     }
 
-    override fun observeRecordSteps(): Flow<List<DayWithWeather>> {
-        return stepsSource.observeRecordsWithWeather()
+    override fun observeRecordSteps(
+        ownerId: Int,
+    ): Flow<List<DayWithWeather>> {
+        return stepsSource.observeRecordsWithWeather(ownerId)
             .map { list ->
                 list.map { day ->
                     DayWithWeather(
@@ -175,11 +179,16 @@ class StepsRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun saveDay(date: LocalDate, steps: Int) {
+    override suspend fun saveDay(
+        date: LocalDate,
+        steps: Int,
+        ownerId: Int
+        ) {
         stepsSource.saveStepsDay(
             Day(
                 date = date,
-                steps = steps
+                steps = steps,
+                ownerId = ownerId
             )
         )
     }

@@ -22,6 +22,7 @@ class SettingsPrefsImpl @Inject constructor(
         val GOAL = intPreferencesKey("goal")
         val LANGUAGE = stringPreferencesKey("language")
         val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        val CURRENT_USER_ID = intPreferencesKey("current_user_id")
     }
 
     override val goal: Flow<Int> =
@@ -48,6 +49,11 @@ class SettingsPrefsImpl @Inject constructor(
             preferences[Keys.IS_LOGGED_IN]?: false
         }
 
+    override val currentUserId: Flow<Int?> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.CURRENT_USER_ID]
+        }
+
     override suspend fun saveProfile(name: String, surname: String) {
         dataStore.edit { preferences ->
             preferences[Keys.SURNAME] = surname
@@ -70,6 +76,12 @@ class SettingsPrefsImpl @Inject constructor(
     override suspend fun saveIsLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->
             preferences[Keys.IS_LOGGED_IN] = isLoggedIn
+        }
+    }
+
+    override suspend fun saveCurrentUserId(id: Int) {
+        dataStore.edit { preferences ->
+            preferences[Keys.CURRENT_USER_ID] = id
         }
     }
 

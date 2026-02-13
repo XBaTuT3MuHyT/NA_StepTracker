@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.na_steptracker.screens.mane.MyApp
+import com.example.na_steptracker.presentation.screens.mane.MyApp
 import com.example.na_steptracker.service.StepsForegroundService.StepsForegroundService
 import dagger.hilt.android.AndroidEntryPoint
 

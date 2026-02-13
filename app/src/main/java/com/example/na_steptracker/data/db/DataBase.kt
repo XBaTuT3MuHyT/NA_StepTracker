@@ -21,7 +21,7 @@ import com.example.na_steptracker.data.weather.local.WeatherEntity
         HourlySteps::class,
         WeatherEntity::class,
         User::class
-    ], version = 5
+    ], version = 6
 )
 abstract class DataBase : RoomDatabase() {
 
@@ -43,6 +43,35 @@ abstract class DataBase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 1. Создаем временную таблицу (сверяем всё: типы, CASCADE, NOT NULL)
+                db.execSQL("""
+            CREATE TABLE `days_new` (
+                `date` TEXT NOT NULL, 
+                `ownerId` INTEGER NOT NULL, 
+                `steps` INTEGER NOT NULL, 
+                PRIMARY KEY(`date`), 
+                FOREIGN KEY(`ownerId`) REFERENCES `users`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent())
+
+                // 2. Создаем индекс сразу на новую таблицу
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_days_ownerId` ON `days_new` (`ownerId`)")
+
+                // 3. Копируем данные.
+                // ВАЖНО: Если date в старой таблице был INTEGER, используй CAST(date AS TEXT)
+                db.execSQL("""
+            INSERT INTO `days_new` (date, ownerId, steps) 
+            SELECT date, 0, steps FROM `days`
+        """.trimIndent())
+
+                // 4. Удаляем старье и переименовываем
+                db.execSQL("DROP TABLE `days`")
+                db.execSQL("ALTER TABLE `days_new` RENAME TO `days`")
             }
         }
     }

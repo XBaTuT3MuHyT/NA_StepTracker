@@ -8,6 +8,7 @@ interface SettingsPrefs {
     val name: Flow<String>
     val surname: Flow<String>
     val isLoggedIn: Flow<Boolean>
+    val currentUserId: Flow<Int?>
 
     suspend fun saveProfile(
         name: String,
@@ -24,6 +25,10 @@ interface SettingsPrefs {
 
     suspend fun saveIsLoggedIn(
         isLoggedIn: Boolean
+    )
+
+    suspend fun saveCurrentUserId(
+        id: Int
     )
 
 }

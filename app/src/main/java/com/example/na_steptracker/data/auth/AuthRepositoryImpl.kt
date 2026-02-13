@@ -17,9 +17,12 @@ class AuthRepositoryImpl @Inject constructor(
         prefs.saveIsLoggedIn(isLogged)
     }
 
+    override val currentUserId: Flow<Int?> = prefs.currentUserId
+
     override suspend fun registerUser(user: User) {
         userDao.registerUser(user)
         prefs.saveIsLoggedIn(true)
+        prefs.saveCurrentUserId(user.id)
     }
 
     override suspend fun login(
@@ -29,6 +32,7 @@ class AuthRepositoryImpl @Inject constructor(
         val user = userDao.loginUser(email, passwordHash)
         if (user != null) {
             prefs.saveIsLoggedIn(true)
+            prefs.saveCurrentUserId(user.id)
             return true
         }
         return false

@@ -14,22 +14,30 @@ class StepsDataSourceImpl @Inject constructor(
         stepsDao.insertSteps(day)
     }
 
-    override fun observeStepsForDate(date: LocalDate): Flow<Day?> {
-        return stepsDao.observeStepsForDate(date)
+    override fun observeStepsForDate(
+        date: LocalDate,
+        ownerId: Int,
+    ): Flow<Day?> {
+        return stepsDao.observeStepsForDate(date, ownerId)
     }
 
     override fun observeStepsForPeriod(
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        ownerId: Int,
     ): Flow<List<Day>> {
-        return stepsDao.observeStepsForPeriod(from, to)
+        return stepsDao.observeStepsForPeriod(from, to, ownerId)
     }
 
-    override fun observeRecordSteps(): Flow<List<Day>> {
-        return stepsDao.observeRecordSteps()
+    override fun observeRecordSteps(
+        ownerId: Int,
+    ): Flow<List<Day>> {
+        return stepsDao.observeRecordSteps(ownerId)
     }
 
-    override fun observeRecordsWithWeather(): Flow<List<DayWithWeatherEntity>> {
-        return stepsDao.observeRecordDaysWithWeather()
+    override fun observeRecordsWithWeather(
+        ownerId: Int,
+    ): Flow<List<DayWithWeatherEntity>> {
+        return stepsDao.observeRecordDaysWithWeather(ownerId)
     }
 }

@@ -28,7 +28,7 @@ object DatabaseModule {
             DataBase::class.java,
             "database"
         )
-            .addMigrations(DataBase.MIGRATION_4_5)
+            .addMigrations(DataBase.MIGRATION_4_5, DataBase.MIGRATION_5_6)
             .build()
     }
 
@@ -50,18 +50,17 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideUserDao(
-        database: DataBase
-    ): UserDao {
-        return database.userDao()
-    }
-
-    @Provides
-    @Singleton
     fun provideWeatherDao(
         database: DataBase
     ): WeatherDao {
         return database.weatherDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideUserDao(
+        database: DataBase
+    ): UserDao {
+        return database.userDao()
+    }
 }

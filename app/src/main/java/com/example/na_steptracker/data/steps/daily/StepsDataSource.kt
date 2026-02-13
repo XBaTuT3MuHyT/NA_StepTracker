@@ -10,15 +10,21 @@ interface StepsDataSource {
     )
 
     fun observeStepsForDate(
-        date: LocalDate
+        date: LocalDate,
+        ownerId: Int,
     ): Flow<Day?>
 
     fun observeStepsForPeriod(
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        ownerId: Int,
     ): Flow<List<Day>>
 
-    fun observeRecordSteps(): Flow<List<Day>>
+    fun observeRecordSteps(
+        ownerId: Int,
+    ): Flow<List<Day>>
 
-    fun observeRecordsWithWeather(): Flow<List<DayWithWeatherEntity>>
+    fun observeRecordsWithWeather(
+        ownerId: Int,
+    ): Flow<List<DayWithWeatherEntity>>
 }
