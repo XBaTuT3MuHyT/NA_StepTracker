@@ -8,6 +8,7 @@ import com.example.na_steptracker.data.steps.hourly.HourlySteps
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDataSource
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.model.DaySteps
+import com.example.na_steptracker.domain.model.DayWithWeather
 import com.example.na_steptracker.domain.model.HourSteps
 import com.example.na_steptracker.domain.model.Profile
 import kotlinx.coroutines.delay
@@ -132,13 +133,14 @@ class StepsRepositoryImpl @Inject constructor(
 
     }
 
-    override fun observeRecordSteps(): Flow<List<DaySteps>> {
-        return stepsSource.observeRecordSteps()
+    override fun observeRecordSteps(): Flow<List<DayWithWeather>> {
+        return stepsSource.observeRecordsWithWeather()
             .map { list ->
                 list.map { day ->
-                    DaySteps(
-                        date = day.date,
-                        steps = day.steps
+                    DayWithWeather(
+                        date = day.day.date,
+                        steps = day.day.steps,
+                        weatherCode = day.weather?.weatherCode ?: 0,
                     )
                 }
             }

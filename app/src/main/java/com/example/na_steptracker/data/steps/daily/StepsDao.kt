@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -19,6 +20,10 @@ interface StepsDao {
         from: LocalDate,
         to: LocalDate
     ): Flow<List<Day>>
+
+    @Transaction
+    @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
+    fun observeRecordDaysWithWeather(): Flow<List<DayWithWeatherEntity>>
 
     @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
     fun observeRecordSteps(): Flow<List<Day>>
