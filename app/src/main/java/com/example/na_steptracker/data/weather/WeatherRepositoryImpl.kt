@@ -36,7 +36,6 @@ class WeatherRepositoryImpl(
         return Weather(
             temp = response.current.temperature,
             weatherCode = response.current.code,
-            icon = mapCodeToIcon(response.current.code),
         )
     }
 
@@ -52,7 +51,6 @@ class WeatherRepositoryImpl(
         localSource.observeWeatherForDate(date).map {
             Weather(
                 weatherCode = it?.weatherCode ?: 0,
-                icon = mapCodeToIcon(it?.weatherCode ?: 0),
                 temp = 0.0,
             )
         }
@@ -66,18 +64,4 @@ class WeatherRepositoryImpl(
         )
     }
 
-    private fun mapCodeToIcon(code: Int): ImageVector {
-        return when (code) {
-            0 -> Icons.Filled.WbSunny
-            1 -> Icons.Filled.WbTwilight
-            2, 3 -> Icons.Filled.Cloud
-            45, 48 -> Icons.Filled.Water
-            51, 53, 55 -> Icons.Filled.Grain
-            61, 63, 65 -> Icons.Filled.WaterDrop
-            71, 73, 75 -> Icons.Filled.AcUnit
-            80, 81, 82 -> Icons.Filled.Thunderstorm
-            95, 96, 99 -> Icons.Filled.ElectricBolt
-            else -> Icons.Default.WbSunny
-        }
-    }
 }

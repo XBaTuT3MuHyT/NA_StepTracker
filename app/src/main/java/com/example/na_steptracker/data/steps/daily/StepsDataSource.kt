@@ -20,5 +20,5 @@ interface StepsDataSource {
 
     fun observeRecordSteps(): Flow<List<Day>>
 
-    fun observeRecordsWithWeather(): Flow<List<DayWithWeather>>
+    fun observeRecordsWithWeather(): Flow<List<DayWithWeatherEntity>>
 }

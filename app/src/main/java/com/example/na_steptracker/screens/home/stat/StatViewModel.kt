@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.na_steptracker.components.RecordCardModel
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
+import com.example.na_steptracker.ui.utils.WeatherMapper
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -81,24 +82,16 @@ class StatViewModel(
             )
 
     val records: StateFlow<RecordsModel> = repository.observeRecordSteps()
-        .flatMapLatest { list ->
-            val recordFlows = list.mapIndexed { index, day ->
-                weatherRepository.observeWeatherForDate(day.date)
-                    .map { weatherEntity ->
-                        RecordCardModel(
-                            index = index,
-                            weather = weatherEntity?.let {
-                                weatherEntity.icon
-                            } ?: RecordCardModel.mock.weather,
-                            steps = day.steps,
-                            date = day.date,
-                        )
-                    }
+        .map { list ->
+            val records = list.mapIndexed { index, day ->
+                RecordCardModel(
+                    index = index,
+                    weather = WeatherMapper.mapCodeToIcon(day.weatherCode),
+                    steps = day.steps,
+                    date = day.date,
+                )
             }
-            combine(recordFlows) { recordArray ->
-                RecordsModel(records = recordArray.toList())
-            }
-
+            RecordsModel(records)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

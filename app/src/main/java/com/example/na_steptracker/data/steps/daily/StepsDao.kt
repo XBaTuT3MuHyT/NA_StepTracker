@@ -23,7 +23,7 @@ interface StepsDao {
 
     @Transaction
     @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
-    fun observeRecordDaysWithWeather(): Flow<List<DayWithWeather>>
+    fun observeRecordDaysWithWeather(): Flow<List<DayWithWeatherEntity>>
 
     @Query("SELECT * FROM days ORDER BY steps DESC LIMIT 15")
     fun observeRecordSteps(): Flow<List<Day>>

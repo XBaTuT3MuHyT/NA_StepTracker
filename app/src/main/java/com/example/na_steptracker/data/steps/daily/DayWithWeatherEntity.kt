@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.example.na_steptracker.data.weather.local.WeatherEntity
 
-data class DayWithWeather(
+data class DayWithWeatherEntity(
     @Embedded val day: Day,
 
     @Relation(

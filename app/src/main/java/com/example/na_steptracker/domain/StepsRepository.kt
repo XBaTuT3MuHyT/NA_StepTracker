@@ -1,6 +1,7 @@
 package com.example.na_steptracker.domain
 
 import com.example.na_steptracker.domain.model.DaySteps
+import com.example.na_steptracker.domain.model.DayWithWeather
 import com.example.na_steptracker.domain.model.HourSteps
 import com.example.na_steptracker.domain.model.Profile
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ interface StepsRepository {
         to: LocalDate,
     ): Flow<List<DaySteps>>
     fun observeHourlySteps(): Flow<List<HourSteps>>
-    fun observeRecordSteps(): Flow<List<DaySteps>>
+    fun observeRecordSteps(): Flow<List<DayWithWeather>>
     fun observeProfile(): Flow<Profile>
     fun observeGoal(): Flow<Int>
     fun observeLanguage(): Flow<String>

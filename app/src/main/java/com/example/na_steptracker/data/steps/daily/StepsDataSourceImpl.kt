@@ -26,7 +26,7 @@ class StepsDataSourceImpl(
         return stepsDao.observeRecordSteps()
     }
 
-    override fun observeRecordsWithWeather(): Flow<List<DayWithWeather>> {
+    override fun observeRecordsWithWeather(): Flow<List<DayWithWeatherEntity>> {
         return stepsDao.observeRecordDaysWithWeather()
     }
 }

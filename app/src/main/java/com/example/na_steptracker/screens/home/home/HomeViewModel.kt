@@ -27,7 +27,7 @@ class HomeViewModel(
     private val today = LocalDate.now()
     private var DEFAULT_ICON =Icons.Filled.SignalWifiConnectedNoInternet4
 
-    private val _weather = MutableStateFlow<Weather>(Weather(0.0,0, DEFAULT_ICON))
+    private val _weather = MutableStateFlow<Weather>(Weather(0.0,0))
     val weather = _weather.asStateFlow()
 
     init {
@@ -48,7 +48,7 @@ class HomeViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = DailyUiModel(
-            0, 0, 0f, Weather(0.0, 0, DEFAULT_ICON)
+            0, 0, 0f, Weather(0.0, 0)
         )
     )
 
