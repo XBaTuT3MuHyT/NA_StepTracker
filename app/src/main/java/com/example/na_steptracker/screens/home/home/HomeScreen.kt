@@ -121,7 +121,7 @@ fun DailyStat(dailyModel: DailyUiModel) {
                     )
                 }
                 Icon(
-                    imageVector = dailyModel.weather.icon,
+                    imageVector = dailyModel.weatherIcon,
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp)

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.na_steptracker.domain.StepsRepository
 import com.example.na_steptracker.domain.WeatherRepository
 import com.example.na_steptracker.domain.model.Weather
+import com.example.na_steptracker.ui.utils.WeatherMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,13 +46,13 @@ class HomeViewModel @Inject constructor(
             current = steps.steps,
             target = goal,
             progress = steps.steps / goal.toFloat(),
-            weather = weather
+            weatherIcon = WeatherMapper.mapCodeToIcon(weather.weatherCode)
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = DailyUiModel(
-            0, 0, 0f, Weather(0.0, 0)
+            0, 0, 0f, DEFAULT_ICON
         )
     )
 
