@@ -40,4 +40,9 @@ class StepsDataSourceImpl @Inject constructor(
     ): Flow<List<DayWithWeatherEntity>> {
         return stepsDao.observeRecordDaysWithWeather(ownerId)
     }
+
+    override fun observeAllSteps(ownerId: Int): Flow<List<Day>> {
+        return stepsDao.observeAllSteps(ownerId)
+    }
+
 }

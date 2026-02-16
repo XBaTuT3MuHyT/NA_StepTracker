@@ -21,6 +21,9 @@ interface StepsRepository {
     fun observeRecordSteps(
         ownerId: Int,
     ): Flow<List<DayWithWeather>>
+    fun observeAllSteps(
+        ownerId: Int,
+    ): Flow<List<Int>>
     fun observeProfile(): Flow<Profile>
     fun observeGoal(): Flow<Int>
     fun observeLanguage(): Flow<String>

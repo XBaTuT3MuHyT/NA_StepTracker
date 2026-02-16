@@ -150,6 +150,15 @@ class StepsRepositoryImpl @Inject constructor(
             }
     }
 
+    override fun observeAllSteps(ownerId: Int): Flow<List<Int>> {
+        return stepsSource.observeAllSteps(ownerId)
+            .map { list ->
+                list.map { day ->
+                    day.steps
+                }
+            }
+    }
+
     override fun observeProfile(): Flow<Profile> {
         return combine(
             settingsPrefs.surname,
@@ -183,7 +192,7 @@ class StepsRepositoryImpl @Inject constructor(
         date: LocalDate,
         steps: Int,
         ownerId: Int
-        ) {
+    ) {
         stepsSource.saveStepsDay(
             Day(
                 date = date,

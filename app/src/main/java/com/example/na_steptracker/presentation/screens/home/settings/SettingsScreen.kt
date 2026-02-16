@@ -227,7 +227,9 @@ fun ProfileSetting(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Absolute.SpaceAround
                 ) {
-                    Column {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = "${profileModel.steps}",
                             fontSize = 28.sp,
@@ -238,17 +240,17 @@ fun ProfileSetting(
                             text = stringResource(R.string.settings_profile_steps),
                         )
                     }
-                    Column {
-                        Text(
-                            text = "56",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            modifier = Modifier.alpha(0.5f),
-                            text = stringResource(R.string.settings_profile_ccal),
-                        )
-                    }
+//                    Column {
+//                        Text(
+//                            text = "56",
+//                            fontSize = 28.sp,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                        Text(
+//                            modifier = Modifier.alpha(0.5f),
+//                            text = stringResource(R.string.settings_profile_ccal),
+//                        )
+//                    }
                 }
 
             }

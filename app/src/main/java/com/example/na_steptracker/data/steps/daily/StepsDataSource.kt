@@ -27,4 +27,9 @@ interface StepsDataSource {
     fun observeRecordsWithWeather(
         ownerId: Int,
     ): Flow<List<DayWithWeatherEntity>>
+
+    fun observeAllSteps(
+        ownerId: Int,
+    ): Flow<List<Day>>
+
 }

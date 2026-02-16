@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,17 +34,26 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                stepsRepository.observeGoal(),
-                stepsRepository.observeLanguage(),
-                stepsRepository.observeProfile(),
-            ) { goal, language, profile ->
-                updateState(goal, language, profile)
-            }.collect()
+            authRepository.currentUserId
+                .flatMapLatest { userId ->
+                    if (userId == null) {
+                        flowOf(SettingsUiState())
+                    } else {
+                        combine(
+                            stepsRepository.observeGoal(),
+                            stepsRepository.observeLanguage(),
+                            stepsRepository.observeProfile(),
+                            stepsRepository.observeAllSteps(userId)
+                        ) { goal, language, profile, allSteps ->
+                            updateState(goal, language, profile, allSteps)
+                        }
+                    }
+                }.collect()
         }
+
     }
 
-    private fun updateState(goal: Int, language: String, profile: Profile) {
+    private fun updateState(goal: Int, language: String, profile: Profile, allSteps: List<Int>) {
         lastSavedProfile = profile
 
         _state.update { currentState ->
@@ -51,10 +62,11 @@ class SettingsViewModel @Inject constructor(
                 profile = if (currentState.profile.isDirty) {
                     currentState.profile
                 } else {
-                    ProfileModel(
+                    currentState.profile.copy(
                         name = profile.name,
                         surname = profile.surname,
-                        isDirty = false
+                        steps = allSteps.sum(),
+                        isDirty = false,
                     )
                 },
                 settings = currentState.settings.copy(
@@ -85,7 +97,7 @@ class SettingsViewModel @Inject constructor(
     private fun onDismiss() {
         _state.update { currentState ->
             val restoredProfile = lastSavedProfile?.let { saved ->
-                ProfileModel(
+                currentState.profile.copy(
                     name = saved.name,
                     surname = saved.surname,
                     isDirty = false,
