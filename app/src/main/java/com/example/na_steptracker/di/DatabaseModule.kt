@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.na_steptracker.data.auth.UserDao
 import com.example.na_steptracker.data.db.DataBase
+import com.example.na_steptracker.data.db.DataBase.Companion.MIGRATION_6_7
 import com.example.na_steptracker.data.steps.daily.StepsDao
 import com.example.na_steptracker.data.steps.hourly.HourlyStepsDao
 import com.example.na_steptracker.data.weather.local.WeatherDao
@@ -28,7 +29,7 @@ object DatabaseModule {
             DataBase::class.java,
             "database"
         )
-            .addMigrations(DataBase.MIGRATION_4_5, DataBase.MIGRATION_5_6)
+            .addMigrations(DataBase.MIGRATION_4_5, DataBase.MIGRATION_5_6, MIGRATION_6_7)
             .build()
     }
 

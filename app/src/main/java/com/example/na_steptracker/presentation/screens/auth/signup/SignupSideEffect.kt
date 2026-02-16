@@ -4,4 +4,6 @@ sealed interface SignupSideEffect {
     object NavigateToHome : SignupSideEffect
     object NavigateToLogin : SignupSideEffect
     object NavigateToForgotPassword : SignupSideEffect
+    data class ShowToast(val message: String) : SignupSideEffect
+
 }

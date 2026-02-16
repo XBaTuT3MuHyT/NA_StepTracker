@@ -4,5 +4,6 @@ sealed interface LoginSideEffect {
     object NavigateToHome : LoginSideEffect
     object NavigateToSignup : LoginSideEffect
     object NavigateToForgotPassword : LoginSideEffect
+    data class ShowToast(val message: String) : LoginSideEffect
 
 }

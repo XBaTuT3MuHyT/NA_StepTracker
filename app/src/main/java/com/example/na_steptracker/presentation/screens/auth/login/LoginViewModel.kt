@@ -81,6 +81,7 @@ class LoginViewModel @Inject constructor(
 
                 _state.update { it.copy(isLoading = false) }
             } else {
+                _sideEffect.send(LoginSideEffect.ShowToast("Неверный логин или пароль"))
                 _state.update { it.copy(isLoading = false) }
             }
         }

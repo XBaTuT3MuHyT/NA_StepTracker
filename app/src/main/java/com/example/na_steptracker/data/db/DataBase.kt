@@ -21,7 +21,7 @@ import com.example.na_steptracker.data.weather.local.WeatherEntity
         HourlySteps::class,
         WeatherEntity::class,
         User::class
-    ], version = 6
+    ], version = 7
 )
 abstract class DataBase : RoomDatabase() {
 
@@ -63,7 +63,6 @@ abstract class DataBase : RoomDatabase() {
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_days_ownerId` ON `days_new` (`ownerId`)")
 
                 // 3. Копируем данные.
-                // ВАЖНО: Если date в старой таблице был INTEGER, используй CAST(date AS TEXT)
                 db.execSQL("""
             INSERT INTO `days_new` (date, ownerId, steps) 
             SELECT date, 0, steps FROM `days`
@@ -72,6 +71,21 @@ abstract class DataBase : RoomDatabase() {
                 // 4. Удаляем старье и переименовываем
                 db.execSQL("DROP TABLE `days`")
                 db.execSQL("ALTER TABLE `days_new` RENAME TO `days`")
+            }
+        }
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+            DELETE FROM users 
+            WHERE id NOT IN (
+                SELECT MIN(id) 
+                FROM users 
+                GROUP BY email
+            )
+        """.trimIndent())
+
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_users_email` ON `users` (`email`)")
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.na_steptracker.data.auth.User
 import com.example.na_steptracker.domain.AuthRepository
+import com.example.na_steptracker.presentation.screens.auth.login.LoginSideEffect
 import com.example.na_steptracker.presentation.screens.auth.login.toSha256
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignupViewModel @Inject constructor(
     private val authRepository: AuthRepository
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(SignupUiState())
     val state = _state.asStateFlow()
 
@@ -53,17 +54,32 @@ class SignupViewModel @Inject constructor(
 
     private fun onSignUpClick() {
         val currentState = _state.value
-        
-        if (currentState.password != currentState.repeatPassword) {
-            return
-        }
 
         viewModelScope.launch {
+
             _state.update { it.copy(isLoading = true) }
+
+            if (currentState.password != currentState.repeatPassword) {
+                _state.update { it.copy(isLoading = false) }
+                _sideEffect.send(SignupSideEffect.ShowToast("Пароли не совпадают"))
+                return@launch
+            }
+
+            if (!currentState.email.contains('@')) {
+                _state.update { it.copy(isLoading = false) }
+                _sideEffect.send(SignupSideEffect.ShowToast("Email должен содержать @"))
+                return@launch
+            }
+
+            if (currentState.password.length < 4) {
+                _state.update { it.copy(isLoading = false) }
+                _sideEffect.send(SignupSideEffect.ShowToast("Пароль должен содержать не менее 4 символов"))
+                return@launch
+            }
 
             try {
                 val passwordHash = currentState.password.toSha256()
-                
+
                 val newUser = User(
                     name = currentState.name,
                     email = currentState.email,
@@ -83,6 +99,7 @@ class SignupViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                 }
             } catch (e: Exception) {
+                _sideEffect.send(SignupSideEffect.ShowToast("Не удалось зарегистрировать пользователя"))
                 _state.update { it.copy(isLoading = false) }
             }
         }
