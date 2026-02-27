@@ -71,7 +71,7 @@ class SettingsViewModel @Inject constructor(
                 },
                 settings = currentState.settings.copy(
                     selectedSteps = goal,
-                    selectedLanguage = AppLanguage.fromDisplayName(language)
+                    selectedLanguage = AppLanguage.fromIsoCode(language)
                 )
             )
         }
@@ -139,8 +139,10 @@ class SettingsViewModel @Inject constructor(
         _state.update { it.copy(settings = it.settings.copy(selectedLanguage = language)) }
         viewModelScope.launch {
             try {
-                stepsRepository.saveLanguage(language.displayName)
+                stepsRepository.saveLanguage(language.isoCode)
+                _effect.send(SettingsSideEffect.RecreateActivity)
             } catch (e: Exception) {
+                _effect.send(SettingsSideEffect.ShowError("Не удалось сохранить настройки языка"))
             }
         }
     }

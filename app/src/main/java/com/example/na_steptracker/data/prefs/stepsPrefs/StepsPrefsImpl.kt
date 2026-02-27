@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.na_steptracker.di.StepsDataStore
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,7 @@ import java.time.LocalDateTime
 
 @Singleton
 class StepsPrefsImpl @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @StepsDataStore private val dataStore: DataStore<Preferences>
 ): StepsDisplayPrefs, StepsPrefs {
 
     private object Keys {

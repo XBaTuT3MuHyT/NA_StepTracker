@@ -17,12 +17,13 @@ class SettingsPrefsImpl @Inject constructor(
 ): SettingsPrefs {
 
     private object Keys {
+        val CURRENT_USER_ID = intPreferencesKey("current_user_id")
+        val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+
         val NAME = stringPreferencesKey("name")
         val SURNAME = stringPreferencesKey("surname")
         val GOAL = intPreferencesKey("goal")
         val LANGUAGE = stringPreferencesKey("language")
-        val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-        val CURRENT_USER_ID = intPreferencesKey("current_user_id")
     }
 
     override val goal: Flow<Int> =
@@ -32,7 +33,7 @@ class SettingsPrefsImpl @Inject constructor(
 
     override val language: Flow<String> =
         dataStore.data.map { preferences ->
-            preferences[Keys.LANGUAGE]?: ""
+            preferences[Keys.LANGUAGE]?: "ru"
         }
     override val name: Flow<String> =
         dataStore.data.map { preferences ->
